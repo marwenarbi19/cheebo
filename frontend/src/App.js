@@ -12,9 +12,15 @@ import Profile from './pages/Profile';
 import Pets from './pages/pets';        // si le fichier est pets.jsx
 import Vet from './pages/vet';          // si le fichier est vet.jsx
 import AdminProduct from './components/admin/AdminProduct';
+import AdminUsers from './components/admin/AdminUsers';
+import AdminPosts from './components/admin/AdminPosts';
+import AdminStats from './components/admin/AdminStats';
+import AdminOrders from './components/admin/AdminOrders';
+import AdminSettings from './components/admin/AdminSettings';
+import AdminVets from './components/admin/AdminVets';
+import AdminReports from './components/admin/AdminReports';
 
 import ResetPassword from './pages/ResetPassword';
-
 
 
 function App() {
@@ -22,7 +28,6 @@ function App() {
     <Router>
       <Routes>
         {/* Admin routes */}
-        
         <Route
           path="/admin/dashboard"
           element={
@@ -36,6 +41,30 @@ function App() {
           element={
             <AdminRoute>
               <AdminProduct />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <AdminRoute>
+              <AdminUsers />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/posts"
+          element={
+            <AdminRoute>
+              <AdminPosts />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/stats"
+          element={
+            <AdminRoute>
+              <AdminStats />
             </AdminRoute>
           }
         />
