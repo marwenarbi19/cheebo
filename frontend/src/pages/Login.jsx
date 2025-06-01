@@ -15,6 +15,9 @@ const Login = () => {
       
     
       navigate("/home");
+    }else if  (email === "admin@example.com" && password === "admin123") {
+      console.log("Connexion admin réussie !");
+      navigate("/admin/dashboard");
     } else {
       alert("Identifiants incorrects !");
     }
