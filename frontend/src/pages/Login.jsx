@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,7 +14,7 @@ const Login = () => {
       console.log("Connexion réussie !");
       
     
-      navigate("/");
+      navigate("/home");
     } else {
       alert("Identifiants incorrects !");
     }
@@ -57,7 +58,7 @@ const Login = () => {
             </form>
 
             <button
-              onClick={() => alert("Ajoute ici la logique de réinitialisation du mot de passe")}
+              onClick={() => navigate("/reset-password")}
               className="text-[#ffffff] mt-2 no-underline hover:underline block text-center"
             >
               Vous avez oublié votre mot de passe ?

@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.scrollbar-rounded::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+}
+
+.scrollbar-rounded::-webkit-scrollbar-track {
+  border-radius: 9999px;
+}
+
+/* For Firefox compatibility */
+.scrollbar-rounded {
+  scrollbar-width: thin;
+  scrollbar-color: #6B46C1 #E5E7EB;
+}
+
+.dark .scrollbar-rounded {
+  scrollbar-color: #6B46C1 #1F2937;
+}
