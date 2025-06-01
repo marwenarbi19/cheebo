@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from './Header';
 import Footer from './Footer';
-
+import PrivateChat from './Chat/PrivateChat';
 const Layout = ({ children }) => {
   // Récupérer le mode sombre depuis localStorage ou utiliser le thème du système
   const [darkMode, setDarkMode] = useState(() => {
@@ -40,15 +40,17 @@ const Layout = ({ children }) => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header darkMode={darkMode} setDarkMode={setDarkMode} />
+    <Header darkMode={darkMode} setDarkMode={setDarkMode} />
 
-      {/* Main Content avec padding-top pour compenser la barre de navigation fixe */}
-      <main className="flex-grow pt-16 bg-gray-50 dark:bg-dark-gray text-gray-900 dark:text-dark-text transition-colors duration-300">
-        {children}
-      </main>
+    <main className="flex-grow pt-16 bg-gray-50 dark:bg-dark-gray text-gray-900 dark:text-dark-text transition-colors duration-300">
+      {children}
+    </main>
 
-      <Footer darkMode={darkMode} />
-    </div>
+    <Footer darkMode={darkMode} />
+    
+    {/* Ajouter le chat privé */}
+    <PrivateChat />
+  </div>
   );
 };
 
