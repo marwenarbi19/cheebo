@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import AdminLayout from './AdminLayout';
 import { 
   Search, 
   Eye, 
@@ -13,465 +13,144 @@ import {
   Video,
   Flag,
   Download,
+  
+  Calendar
 } from 'lucide-react';
 
 const AdminPosts = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  // Données d'exemple des posts
   const [posts, setPosts] = useState([
     {
-      id: 1,
-      title: 'Belle journée au parc avec Rex !',
-      content: 'Rex adore courir après les écureuils. Nous avons passé une magnifique après-midi au parc.',
-      author: 'Jean Dupont',
-      authorEmail: 'jean.dupont@email.com',
-      authorImage: '/users/user_1.jpg',
-      date: '2024-01-20T10:30:00',
-      status: 'published',
-      type: 'image',
-      likes: 245,
-      comments: 32,
-      shares: 12,
-      image: '/pets/pet_1.webp',
-      category: 'Chien',
-      reported: false,
-      reportCount: 0
-    },
-    {
-      id: 2,
-      title: 'Première visite chez le vétérinaire',
-      content: 'Première visite chez le vétérinaire pour Milo aujourd\'hui. Tout va bien !',
-      author: 'Marie Lefèvre',
-      authorEmail: 'marie.lefevre@email.com',
-      authorImage: '/users/user_2.jpg',
-      date: '2024-01-19T15:45:00',
-      status: 'published',
-      type: 'image',
-      likes: 189,
-      comments: 28,
-      shares: 8,
-      image: '/pets/pet_2.jpeg',
-      category: 'Chat',
-      reported: false,
-      reportCount: 0
-    },
-    {
-      id: 3,
-      title: 'Nouvel arrivant dans la famille !',
-      content: 'Voici Luna, notre petite chatte de 3 mois. Elle s\'adapte très bien à sa nouvelle maison.',
-      author: 'Thomas Martin',
-      authorEmail: 'thomas.martin@email.com',
-      authorImage: '/users/user_3.avif',
-      date: '2024-01-18T09:15:00',
-      status: 'published',
-      type: 'image',
-      likes: 167,
-      comments: 24,
-      shares: 15,
-      image: '/pets/pet_3.jpg',
-      category: 'Chat',
-      reported: false,
-      reportCount: 0
-    },
-    {
-      id: 4,
-      title: 'Contenu inapproprié suspect',
-      content: 'Ce post contient du contenu potentiellement inapproprié qui nécessite une révision.',
-      author: 'User Suspect',
-      authorEmail: 'suspect@email.com',
-      authorImage: '/users/default.jpg',
-      date: '2024-01-17T14:20:00',
-      status: 'pending',
+      id: 'POST001',
+      author: 'Marie Dubois',
+      authorAvatar: '👩‍🦰',
+      content: 'Mon petit chaton Milo a enfin appris à utiliser sa litière ! Je suis si fière de lui. Avez-vous des conseils pour l\'habituer au brossage ?',
       type: 'text',
+      date: '2024-03-15T10:30:00',
+      status: 'approved',
+      likes: 24,
+      comments: 8,
+      reports: 0,
+      image: null,
+      tags: ['chat', 'education', 'conseils']
+    },
+    {
+      id: 'POST002',
+      author: 'Jean Martin',
+      authorAvatar: '👨',
+      content: 'Promenade matinale avec Rex dans le parc. Il adore courir après les écureuils ! 🐕',
+      type: 'image',
+      date: '2024-03-14T08:15:00',
+      status: 'pending',
+      likes: 15,
+      comments: 3,
+      reports: 0,
+      image: 'https://example.com/dog-park.jpg',
+      tags: ['chien', 'promenade', 'exercice']
+    },
+    {
+      id: 'POST003',
+      author: 'Sophie Legrand',
+      authorAvatar: '👩',
+      content: 'URGENT: Mon chat a mangé quelque chose de bizarre et vomit depuis ce matin. Que dois-je faire ?',
+      type: 'text',
+      date: '2024-03-13T14:45:00',
+      status: 'flagged',
+      likes: 5,
+      comments: 12,
+      reports: 2,
+      image: null,
+      tags: ['urgence', 'sante', 'chat']
+    },
+    {
+      id: 'POST004',
+      author: 'Pierre Blanc',
+      authorAvatar: '👨‍🦳',
+      content: 'Regardez cette vidéo de mon perroquet qui parle ! Il dit maintenant plus de 20 mots.',
+      type: 'video',
+      date: '2024-03-12T16:20:00',
+      status: 'rejected',
       likes: 2,
       comments: 1,
-      shares: 0,
+      reports: 1,
       image: null,
-      category: 'Général',
-      reported: true,
-      reportCount: 3
-    },
-    {
-      id: 5,
-      title: 'Conseils pour dresser votre chien',
-      content: 'Voici quelques conseils utiles pour bien dresser votre chien et renforcer votre relation.',
-      author: 'Dr. Mouna',
-      authorEmail: 'dr.mouna@email.com',
-      authorImage: '/users/vet1.jpg',
-      date: '2024-01-16T11:30:00',
-      status: 'published',
-      type: 'text',
-      likes: 456,
-      comments: 67,
-      shares: 34,
-      image: null,
-      category: 'Éducation',
-      reported: false,
-      reportCount: 0
+      tags: ['oiseau', 'perroquet', 'dressage']
     }
   ]);
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [filterCategory, setFilterCategory] = useState('all');
-  const [filterType, setFilterType] = useState('all');
-  const [selectedPosts, setSelectedPosts] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedPost, setSelectedPost] = useState(null);
+  const statusConfig = {
+    pending: { label: 'En attente', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
+    approved: { label: 'Approuvé', color: 'bg-green-100 text-green-800', icon: CheckCircle },
+    rejected: { label: 'Rejeté', color: 'bg-red-100 text-red-800', icon: XCircle },
+    flagged: { label: 'Signalé', color: 'bg-orange-100 text-orange-800', icon: Flag }
+  };
 
-  // Filtrage des posts
+  const typeConfig = {
+    text: { label: 'Texte', icon: MessageSquare },
+    image: { label: 'Image', icon: ImageIcon },
+    video: { label: 'Vidéo', icon: Video }
+  };
+
   const filteredPosts = posts.filter(post => {
-    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = post.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          post.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          post.content.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === 'all' || post.status === filterStatus;
-    const matchesCategory = filterCategory === 'all' || post.category === filterCategory;
-    const matchesType = filterType === 'all' || post.type === filterType;
-    
-    return matchesSearch && matchesStatus && matchesCategory && matchesType;
+    const matchesStatus = statusFilter === 'all' || post.status === statusFilter;
+    return matchesSearch && matchesStatus;
   });
 
-  const statuses = ['all', 'published', 'pending', 'rejected', 'draft'];
-  const categories = ['all', 'Chien', 'Chat', 'Oiseau', 'Général', 'Éducation'];
-  const types = ['all', 'image', 'video', 'text'];
-
-  const handleSelectPost = (postId) => {
-    setSelectedPosts(prev => 
-      prev.includes(postId) 
-        ? prev.filter(id => id !== postId)
-        : [...prev, postId]
-    );
+  const updatePostStatus = (postId, newStatus) => {
+    setPosts(posts.map(post => 
+      post.id === postId ? { ...post, status: newStatus } : post
+    ));
   };
 
-  const handleSelectAll = () => {
-    if (selectedPosts.length === filteredPosts.length) {
-      setSelectedPosts([]);
-    } else {
-      setSelectedPosts(filteredPosts.map(post => post.id));
-    }
-  };
-
-  const handlePostAction = (postId, action) => {
-    setPosts(prev => prev.map(post => {
-      if (post.id === postId) {
-        switch (action) {
-          case 'approve':
-            return { ...post, status: 'published' };
-          case 'reject':
-            return { ...post, status: 'rejected' };
-          case 'pending':
-            return { ...post, status: 'pending' };
-          default:
-            return post;
-        }
-      }
-      return post;
-    }));
-  };
-
-  const handleBulkAction = (action) => {
-    if (selectedPosts.length === 0) return;
-    
-    switch (action) {
-      case 'approve':
-        setPosts(prev => prev.map(post => 
-          selectedPosts.includes(post.id) 
-            ? { ...post, status: 'published' }
-            : post
-        ));
-        break;
-      case 'reject':
-        setPosts(prev => prev.map(post => 
-          selectedPosts.includes(post.id) 
-            ? { ...post, status: 'rejected' }
-            : post
-        ));
-        break;
-      case 'delete':
-        if (window.confirm(`Supprimer ${selectedPosts.length} post(s) ?`)) {
-          setPosts(prev => prev.filter(post => !selectedPosts.includes(post.id)));
-        }
-        break;
-      default:
-        console.warn(`Action non reconnue: ${action}`);
-        break;
-    }
-    setSelectedPosts([]);
-  };
-
-  const handleDeletePost = (postId) => {
+  const deletePost = (postId) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce post ?')) {
-      setPosts(prev => prev.filter(post => post.id !== postId));
-      setSelectedPosts(prev => prev.filter(id => id !== postId));
+      setPosts(posts.filter(post => post.id !== postId));
     }
   };
 
-  const openModal = (post) => {
+  const viewPostDetails = (post) => {
     setSelectedPost(post);
     setShowModal(true);
   };
 
-  const closeModal = () => {
-    setShowModal(false);
-    setSelectedPost(null);
-  };
-
-  const getStatusBadge = (status) => {
-    const badges = {
-      published: 'bg-green-100 text-green-800',
-      pending: 'bg-yellow-100 text-yellow-800',
-      rejected: 'bg-red-100 text-red-800',
-      draft: 'bg-gray-100 text-gray-800'
-    };
+  const exportPosts = () => {
+    const csvContent = "data:text/csv;charset=utf-8," + 
+      "ID,Auteur,Type,Date,Statut,Likes,Commentaires,Signalements\n" +
+      posts.map(post => 
+        `${post.id},"${post.author}",${typeConfig[post.type].label},${post.date},${statusConfig[post.status].label},${post.likes},${post.comments},${post.reports}`
+      ).join("\n");
     
-    const labels = {
-      published: 'Publié',
-      pending: 'En attente',
-      rejected: 'Rejeté',
-      draft: 'Brouillon'
-    };
-    
-    return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${badges[status]}`}>
-        {labels[status]}
-      </span>
-    );
-  };
-
-  const getTypeIcon = (type) => {
-    const icons = {
-      image: <ImageIcon className="w-4 h-4" />,
-      video: <Video className="w-4 h-4" />,
-      text: <MessageSquare className="w-4 h-4" />
-    };
-    return icons[type] || <MessageSquare className="w-4 h-4" />;
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "posts.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR', {
       year: 'numeric',
+      month: 'short',
+      day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
     });
   };
 
-  const exportPosts = () => {
-    const data = filteredPosts.map(post => ({
-      ID: post.id,
-      Titre: post.title,
-      Auteur: post.author,
-      Date: formatDate(post.date),
-      Statut: post.status,
-      Type: post.type,
-      Catégorie: post.category,
-      Likes: post.likes,
-      Commentaires: post.comments,
-      Signalements: post.reportCount
-    }));
-    
-    const csv = [
-      Object.keys(data[0]).join(','),
-      ...data.map(row => Object.values(row).join(','))
-    ].join('\n');
-    
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `posts-${new Date().toISOString().split('T')[0]}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
-  const PostModal = () => {
-    if (!selectedPost) return null;
-
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg w-full max-w-4xl p-6 relative max-h-[90vh] overflow-y-auto">
-          <button
-            onClick={closeModal}
-            className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
-          >
-            ✕
-          </button>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Contenu du post */}
-            <div>
-              <div className="flex items-center mb-4">
-                <img
-                  src={selectedPost.authorImage}
-                  alt={selectedPost.author}
-                  className="w-12 h-12 rounded-full mr-3 object-cover"
-                  onError={(e) => {
-                    e.target.src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
-                  }}
-                />
-                <div>
-                  <h3 className="font-semibold text-lg">{selectedPost.author}</h3>
-                  <p className="text-sm text-gray-600">{formatDate(selectedPost.date)}</p>
-                </div>
-              </div>
-
-              <h2 className="text-xl font-bold mb-3">{selectedPost.title}</h2>
-              <p className="text-gray-700 mb-4">{selectedPost.content}</p>
-
-              {selectedPost.image && (
-                <img
-                  src={selectedPost.image}
-                  alt="Post content"
-                  className="w-full h-64 object-cover rounded-lg mb-4"
-                />
-              )}
-
-              <div className="flex items-center gap-4 text-sm text-gray-600">
-                <div className="flex items-center gap-1">
-                  <Heart className="w-4 h-4" />
-                  <span>{selectedPost.likes}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <MessageSquare className="w-4 h-4" />
-                  <span>{selectedPost.comments}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  {getTypeIcon(selectedPost.type)}
-                  <span>{selectedPost.type}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Actions et informations */}
-            <div>
-              <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                <h3 className="font-semibold mb-2">Informations</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Statut:</span>
-                    {getStatusBadge(selectedPost.status)}
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Catégorie:</span>
-                    <span>{selectedPost.category}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Email auteur:</span>
-                    <span>{selectedPost.authorEmail}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Signalements:</span>
-                    <span className={selectedPost.reportCount > 0 ? 'text-red-600 font-medium' : ''}>
-                      {selectedPost.reportCount}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {selectedPost.reported && (
-                <div className="bg-red-50 border border-red-200 p-4 rounded-lg mb-4">
-                  <div className="flex items-center gap-2 text-red-800 mb-2">
-                    <Flag className="w-4 h-4" />
-                    <span className="font-medium">Post signalé</span>
-                  </div>
-                  <p className="text-sm text-red-700">
-                    Ce post a été signalé {selectedPost.reportCount} fois et nécessite une révision.
-                  </p>
-                </div>
-              )}
-
-              <div className="space-y-3">
-                <h3 className="font-semibold">Actions</h3>
-                
-                {selectedPost.status === 'pending' && (
-                  <>
-                    <button
-                      onClick={() => {
-                        handlePostAction(selectedPost.id, 'approve');
-                        closeModal();
-                      }}
-                      className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2"
-                    >
-                      <CheckCircle className="w-4 h-4" />
-                      Approuver
-                    </button>
-                    <button
-                      onClick={() => {
-                        handlePostAction(selectedPost.id, 'reject');
-                        closeModal();
-                      }}
-                      className="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2"
-                    >
-                      <XCircle className="w-4 h-4" />
-                      Rejeter
-                    </button>
-                  </>
-                )}
-                
-                {selectedPost.status === 'published' && (
-                  <button
-                    onClick={() => {
-                      handlePostAction(selectedPost.id, 'pending');
-                      closeModal();
-                    }}
-                    className="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2"
-                  >
-                    <Clock className="w-4 h-4" />
-                    Mettre en attente
-                  </button>
-                )}
-
-                <button
-                  onClick={() => {
-                    handleDeletePost(selectedPost.id);
-                    closeModal();
-                  }}
-                  className="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  Supprimer définitivement
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <aside className="w-64 bg-[#8657ff] text-white p-6">
-        <h2 className="text-2xl font-bold mb-6">Admin Panel</h2>
-        <nav className="space-y-4">
-          <Link to="/admin/dashboard" className="block hover:text-gray-300">
-            📊 Tableau de bord
-          </Link>
-          <Link to="/admin/users" className="block hover:text-gray-300">
-            👤 Gestion des utilisateurs
-          </Link>
-          <Link to="/admin/product" className="block hover:text-gray-300">
-            📝 Gestion des produits
-          </Link>
-          <Link to="/admin/posts" className="block text-yellow-300 font-semibold">
-            📄 Gestion des posts
-          </Link>
-          <Link to="/admin/orders" className="block hover:text-gray-300">
-            🛒 Gestion des commandes
-          </Link>
-          <Link to="/admin/stats" className="block hover:text-gray-300">
-            📈 Statistiques
-          </Link>
-          <Link to="/" className="block text-red-300 hover:text-red-200">
-            🔓 Déconnexion
-          </Link>
-        </nav>
-      </aside>
-
-      {/* Main content */}
-      <main className="flex-1 p-10">
+    <AdminLayout>
+      <div className="p-10">
         <div className="mb-6 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold mb-2 text-[#8657ff]">Gestion des Posts</h1>
@@ -487,238 +166,330 @@ const AdminPosts = () => {
           </button>
         </div>
 
-        {/* Filtres et recherche */}
-        <div className="bg-white rounded-xl p-6 shadow-md mb-6">
-          <div className="flex flex-col md:flex-row gap-4 mb-4">
-            {/* Recherche */}
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Rechercher par titre, auteur ou contenu..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-              />
-            </div>
-
-            {/* Filtres */}
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-            >
-              <option value="all">Tous les statuts</option>
-              {statuses.slice(1).map(status => (
-                <option key={status} value={status}>
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-            >
-              <option value="all">Toutes les catégories</option>
-              {categories.slice(1).map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-
-            <select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-            >
-              <option value="all">Tous les types</option>
-              {types.slice(1).map(type => (
-                <option key={type} value={type}>
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Actions en lot */}
-          {selectedPosts.length > 0 && (
-            <div className="flex gap-2 p-4 bg-gray-50 rounded-lg">
-              <span className="text-sm text-gray-600 self-center">
-                {selectedPosts.length} post(s) sélectionné(s)
-              </span>
-              <button
-                onClick={() => handleBulkAction('approve')}
-                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm"
-              >
-                Approuver
-              </button>
-              <button
-                onClick={() => handleBulkAction('reject')}
-                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
-              >
-                Rejeter
-              </button>
-              <button
-                onClick={() => handleBulkAction('delete')}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm"
-              >
-                Supprimer
-              </button>
-            </div>
-          )}
-        </div>
-
         {/* Statistiques rapides */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-lg p-4 shadow-md">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Posts</p>
-                <p className="text-2xl font-bold text-blue-600">{posts.length}</p>
+                <p className="text-sm font-medium text-gray-600">Total Posts</p>
+                <p className="text-2xl font-bold text-gray-900">{posts.length}</p>
               </div>
-              <MessageSquare className="w-8 h-8 text-blue-500" />
+              <MessageSquare className="h-8 w-8 text-[#8657ff]" />
             </div>
           </div>
-          <div className="bg-white rounded-lg p-4 shadow-md">
+          
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Publiés</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {posts.filter(p => p.status === 'published').length}
-                </p>
-              </div>
-              <CheckCircle className="w-8 h-8 text-green-500" />
-            </div>
-          </div>
-          <div className="bg-white rounded-lg p-4 shadow-md">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">En attente</p>
+                <p className="text-sm font-medium text-gray-600">En attente</p>
                 <p className="text-2xl font-bold text-yellow-600">
                   {posts.filter(p => p.status === 'pending').length}
                 </p>
               </div>
-              <Clock className="w-8 h-8 text-yellow-500" />
+              <Clock className="h-8 w-8 text-yellow-600" />
             </div>
           </div>
-          <div className="bg-white rounded-lg p-4 shadow-md">
+          
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Signalés</p>
-                <p className="text-2xl font-bold text-red-600">
-                  {posts.filter(p => p.reported).length}
+                <p className="text-sm font-medium text-gray-600">Signalés</p>
+                <p className="text-2xl font-bold text-orange-600">
+                  {posts.filter(p => p.status === 'flagged').length}
                 </p>
               </div>
-              <Flag className="w-8 h-8 text-red-500" />
+              <Flag className="h-8 w-8 text-orange-600" />
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Interactions</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {posts.reduce((sum, post) => sum + post.likes + post.comments, 0)}
+                </p>
+              </div>
+              <Heart className="h-8 w-8 text-green-600" />
             </div>
           </div>
         </div>
 
-        {/* Tableau des posts */}
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+        {/* Filtres et recherche */}
+        <div className="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Rechercher par ID, auteur ou contenu..."
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            
+            <select
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="all">Tous les statuts</option>
+              <option value="pending">En attente</option>
+              <option value="approved">Approuvé</option>
+              <option value="flagged">Signalé</option>
+              <option value="rejected">Rejeté</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Liste des posts */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="p-4">
-                    <input
-                      type="checkbox"
-                      checked={selectedPosts.length === filteredPosts.length}
-                      onChange={handleSelectAll}
-                      className="rounded border-gray-300"
-                    />
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Post
                   </th>
-                  <th className="text-left p-4 font-semibold">Post</th>
-                  <th className="text-left p-4 font-semibold">Auteur</th>
-                  <th className="text-left p-4 font-semibold">Date</th>
-                  <th className="text-left p-4 font-semibold">Statut</th>
-                  <th className="text-left p-4 font-semibold">Engagement</th>
-                  <th className="text-left p-4 font-semibold">Actions</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Auteur
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Type
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Statut
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Interactions
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
               </thead>
-              <tbody>
-                {filteredPosts.map((post) => (
-                  <tr key={post.id} className="border-t border-gray-200 hover:bg-gray-50">
-                    <td className="p-4">
-                      <input
-                        type="checkbox"
-                        checked={selectedPosts.includes(post.id)}
-                        onChange={() => handleSelectPost(post.id)}
-                        className="rounded border-gray-300"
-                      />
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        {getTypeIcon(post.type)}
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredPosts.map((post) => {
+                  const StatusIcon = statusConfig[post.status].icon;
+                  const TypeIcon = typeConfig[post.type].icon;
+                  return (
+                    <tr key={post.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <div>
-                          <div className="font-medium text-sm">{post.title}</div>
-                          <div className="text-xs text-gray-500">{post.category}</div>
-                          {post.reported && (
-                            <div className="flex items-center gap-1 text-xs text-red-600 mt-1">
-                              <Flag className="w-3 h-3" />
-                              <span>Signalé ({post.reportCount})</span>
+                          <div className="font-medium text-gray-900">{post.id}</div>
+                          <div className="text-sm text-gray-500 max-w-xs truncate">
+                            {post.content}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <span className="text-2xl mr-3">{post.authorAvatar}</span>
+                          <div>
+                            <div className="font-medium text-gray-900">{post.author}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center text-sm text-gray-900">
+                          <TypeIcon className="w-4 h-4 mr-2 text-gray-400" />
+                          {typeConfig[post.type].label}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center text-sm text-gray-900">
+                          <Calendar className="w-4 h-4 mr-2 text-gray-400" />
+                          {formatDate(post.date)}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusConfig[post.status].color}`}>
+                          <StatusIcon className="w-3 h-3 mr-1" />
+                          {statusConfig[post.status].label}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                          <div className="flex items-center">
+                            <Heart className="w-4 h-4 mr-1" />
+                            {post.likes}
+                          </div>
+                          <div className="flex items-center">
+                            <MessageSquare className="w-4 h-4 mr-1" />
+                            {post.comments}
+                          </div>
+                          {post.reports > 0 && (
+                            <div className="flex items-center text-red-500">
+                              <Flag className="w-4 h-4 mr-1" />
+                              {post.reports}
                             </div>
                           )}
                         </div>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        <img
-                          src={post.authorImage}
-                          alt={post.author}
-                          className="w-8 h-8 rounded-full object-cover"
-                          onError={(e) => {
-                            e.target.src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
-                          }}
-                        />
-                        <div>
-                          <div className="font-medium text-sm">{post.author}</div>
-                          <div className="text-xs text-gray-500">{post.authorEmail}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => viewPostDetails(post)}
+                            className="text-[#8657ff] hover:text-purple-900 p-1 hover:bg-purple-50 rounded"
+                            title="Voir les détails"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <select
+                            value={post.status}
+                            onChange={(e) => updatePostStatus(post.id, e.target.value)}
+                            className="text-xs border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+                          >
+                            <option value="pending">En attente</option>
+                            <option value="approved">Approuver</option>
+                            <option value="flagged">Signaler</option>
+                            <option value="rejected">Rejeter</option>
+                          </select>
+                          <button
+                            onClick={() => deletePost(post.id)}
+                            className="text-red-600 hover:text-red-900 p-1 hover:bg-red-50 rounded"
+                            title="Supprimer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="text-sm">
-                        {formatDate(post.date)}
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      {getStatusBadge(post.status)}
-                    </td>
-                    <td className="p-4">
-                      <div className="text-sm space-y-1">
-                        <div className="flex items-center gap-2">
-                          <Heart className="w-3 h-3 text-red-500" />
-                          <span>{post.likes}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <MessageSquare className="w-3 h-3 text-blue-500" />
-                          <span>{post.comments}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <button
-                        onClick={() => openModal(post)}
-                        className="text-blue-600 hover:text-blue-800 p-1"
-                        title="Voir détails"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         </div>
 
-        {/* Modal */}
-        {showModal && <PostModal />}
-      </main>
-    </div>
+        {/* Modal détails post */}
+        {showModal && selectedPost && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-bold text-gray-900">Détails du post {selectedPost.id}</h2>
+                  <button
+                    onClick={() => setShowModal(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <XCircle className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
+              
+              <div className="p-6 space-y-6">
+                {/* Informations auteur */}
+                <div className="flex items-center space-x-4">
+                  <span className="text-4xl">{selectedPost.authorAvatar}</span>
+                  <div>
+                    <h3 className="font-medium text-gray-900">{selectedPost.author}</h3>
+                    <p className="text-sm text-gray-500">Publié le {formatDate(selectedPost.date)}</p>
+                  </div>
+                </div>
+
+                {/* Contenu du post */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h4 className="font-medium text-gray-900 mb-2">Contenu</h4>
+                  <p className="text-gray-700 whitespace-pre-wrap">{selectedPost.content}</p>
+                </div>
+
+                {/* Tags */}
+                {selectedPost.tags && selectedPost.tags.length > 0 && (
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">Tags</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedPost.tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Média */}
+                {selectedPost.image && (
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">Média</h4>
+                    <div className="bg-gray-100 rounded-lg p-4 text-center text-gray-500">
+                      {selectedPost.type === 'image' ? (
+                        <div className="flex items-center justify-center">
+                          <ImageIcon className="w-8 h-8 mr-2" />
+                          Image jointe
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center">
+                          <Video className="w-8 h-8 mr-2" />
+                          Vidéo jointe
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Statistiques */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="bg-green-50 rounded-lg p-4 text-center">
+                    <Heart className="w-6 h-6 text-green-600 mx-auto mb-2" />
+                    <p className="text-2xl font-bold text-green-600">{selectedPost.likes}</p>
+                    <p className="text-sm text-gray-600">J'aime</p>
+                  </div>
+                  <div className="bg-blue-50 rounded-lg p-4 text-center">
+                    <MessageSquare className="w-6 h-6 text-blue-600 mx-auto mb-2" />
+                    <p className="text-2xl font-bold text-blue-600">{selectedPost.comments}</p>
+                    <p className="text-sm text-gray-600">Commentaires</p>
+                  </div>
+                  <div className="bg-red-50 rounded-lg p-4 text-center">
+                    <Flag className="w-6 h-6 text-red-600 mx-auto mb-2" />
+                    <p className="text-2xl font-bold text-red-600">{selectedPost.reports}</p>
+                    <p className="text-sm text-gray-600">Signalements</p>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex space-x-3 pt-4 border-t border-gray-200">
+                  <button
+                    onClick={() => {
+                      updatePostStatus(selectedPost.id, 'approved');
+                      setShowModal(false);
+                    }}
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium"
+                  >
+                    Approuver
+                  </button>
+                  <button
+                    onClick={() => {
+                      updatePostStatus(selectedPost.id, 'rejected');
+                      setShowModal(false);
+                    }}
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium"
+                  >
+                    Rejeter
+                  </button>
+                  <button
+                    onClick={() => {
+                      deletePost(selectedPost.id);
+                      setShowModal(false);
+                    }}
+                    className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium"
+                  >
+                    Supprimer
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </AdminLayout>
   );
 };
 

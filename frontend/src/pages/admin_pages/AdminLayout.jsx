@@ -1,4 +1,3 @@
-
 import { Link, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, 
@@ -12,7 +11,6 @@ import {
   AlertTriangle,
   LogOut
 } from "lucide-react";
-
 
 const AdminLayout = ({ children }) => {
   const location = useLocation();
@@ -85,7 +83,6 @@ const AdminLayout = ({ children }) => {
         
         <nav className="space-y-2">
           {menuItems.map((item) => {
-            const Icon = item.icon;
             const isActive = location.pathname === item.path;
             
             return (
@@ -119,7 +116,7 @@ const AdminLayout = ({ children }) => {
         
         {/* Footer sidebar */}
         <div className="mt-auto pt-6 border-t border-purple-300 border-opacity-30">
-          <p className="text-purple-200 text-xs">© 2024 Cheebo</p>
+          <p className="text-purple-200 text-xs">© 2025 Cheebo</p>
           <p className="text-purple-200 text-xs">Version 1.0.0</p>
         </div>
       </aside>

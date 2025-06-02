@@ -1,542 +1,644 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import AdminLayout from './AdminLayout';
 import { 
   Save, 
   Upload,
   Settings,
-  Mail,
+  
   Shield,
-  Globe,
+  
   Palette,
   Bell,
   Database,
   Key,
   Users,
-  MessageSquare,
+  
   Store,
-  Truck,
-  CreditCard,
+  
   Eye,
-  EyeOff
+  EyeOff,
+  CheckCircle,
+  AlertCircle
 } from 'lucide-react';
 
 const AdminSettings = () => {
   const [activeTab, setActiveTab] = useState('general');
-  const [showPasswords, setShowPasswords] = useState({});
+  const [showPassword, setShowPassword] = useState({});
   const [settings, setSettings] = useState({
     // Paramètres généraux
-    general: {
-      siteName: 'Cheebo',
-      siteDescription: 'Plateforme pour propriétaires d\'animaux',
-      siteUrl: 'https://cheebo.com',
-      contactEmail: 'contact@cheebo.com',
-      supportEmail: 'support@cheebo.com',
-      timezone: 'Europe/Paris',
-      language: 'fr',
-      maintenanceMode: false
-    },
+    siteName: 'Cheebo',
+    siteDescription: 'Plateforme dédiée aux amoureux des animaux',
+    siteUrl: 'https://cheebo.com',
+    adminEmail: 'admin@cheebo.com',
+    
     // Paramètres de sécurité
-    security: {
-      passwordMinLength: 8,
-      requireSpecialChars: true,
-      requireNumbers: true,
-      sessionTimeout: 1440, // minutes
-      maxLoginAttempts: 5,
-      enableTwoFactor: false,
-      blockSuspiciousIPs: true
-    },
-    // Paramètres email
-    email: {
-      smtpHost: 'smtp.gmail.com',
-      smtpPort: 587,
-      smtpUsername: 'noreply@cheebo.com',
-      smtpPassword: '••••••••••',
-      fromName: 'Cheebo',
-      fromEmail: 'noreply@cheebo.com',
-      enableEmailNotifications: true
-    },
-    // Paramètres boutique
-    shop: {
-      currency: 'EUR',
-      taxRate: 20,
-      shippingCost: 5.99,
-      freeShippingThreshold: 50,
-      enableInventoryTracking: true,
-      lowStockThreshold: 10,
-      autoApproveProducts: false
-    },
-    // Paramètres communauté
-    community: {
-      autoApproveUsers: true,
-      requireEmailVerification: true,
-      moderateComments: false,
-      allowFileUploads: true,
-      maxFileSize: 10, // MB
-      allowedFileTypes: 'jpg,jpeg,png,gif,mp4',
-      enableReports: true
-    },
-    // Notifications
-    notifications: {
-      newUserRegistration: true,
-      newPost: false,
-      newOrder: true,
-      reportedContent: true,
-      systemAlerts: true,
-      emailDigest: true
-    }
+    twoFactorAuth: true,
+    sessionTimeout: 30,
+    maxLoginAttempts: 5,
+    passwordMinLength: 8,
+    requireSpecialChars: true,
+    
+    // Paramètres de notification
+    emailNotifications: true,
+    pushNotifications: false,
+    smsNotifications: false,
+    weeklyReports: true,
+    
+    // Paramètres de modération
+    autoModeration: true,
+    badWordsFilter: true,
+    imageModeration: true,
+    maxPostsPerDay: 10,
+    
+    // Paramètres e-commerce
+    currency: 'EUR',
+    taxRate: 20,
+    freeShippingThreshold: 50,
+    returnPeriod: 14,
+    
+    // Paramètres d'apparence
+    primaryColor: '#8657ff',
+    secondaryColor: '#f3f4f6',
+    darkMode: false,
+    customLogo: null,
+    
+    // API Keys
+    emailApiKey: '',
+    smsApiKey: '',
+    paymentApiKey: '',
+    cloudinaryApiKey: ''
   });
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState('');
 
   const tabs = [
     { id: 'general', label: 'Général', icon: Settings },
     { id: 'security', label: 'Sécurité', icon: Shield },
-    { id: 'email', label: 'Email', icon: Mail },
-    { id: 'shop', label: 'Boutique', icon: Store },
-    { id: 'community', label: 'Communauté', icon: Users },
-    { id: 'notifications', label: 'Notifications', icon: Bell }
+    { id: 'notifications', label: 'Notifications', icon: Bell },
+    { id: 'moderation', label: 'Modération', icon: Users },
+    { id: 'ecommerce', label: 'E-commerce', icon: Store },
+    { id: 'appearance', label: 'Apparence', icon: Palette },
+    { id: 'integrations', label: 'Intégrations', icon: Key }
   ];
 
-  const handleSettingChange = (category, key, value) => {
+  const handleInputChange = (section, field, value) => {
     setSettings(prev => ({
       ...prev,
-      [category]: {
-        ...prev[category],
-        [key]: value
-      }
+      [field]: value
     }));
   };
 
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      // Simulation de la sauvegarde
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setSaveMessage('Paramètres sauvegardés avec succès !');
+      setTimeout(() => setSaveMessage(''), 3000);
+    } catch (error) {
+      setSaveMessage('Erreur lors de la sauvegarde');
+    }
+    setIsSaving(false);
+  };
+
+  const handleBackup = async () => {
+    try {
+      const backupData = {
+        settings,
+        timestamp: new Date().toISOString(),
+        version: '1.0.0'
+      };
+      
+      const dataStr = JSON.stringify(backupData, null, 2);
+      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+      
+      const exportFileDefaultName = `cheebo-backup-${new Date().toISOString().split('T')[0]}.json`;
+      
+      const linkElement = document.createElement('a');
+      linkElement.setAttribute('href', dataUri);
+      linkElement.setAttribute('download', exportFileDefaultName);
+      linkElement.click();
+    } catch (error) {
+      console.error('Erreur lors de la création de la sauvegarde:', error);
+    }
+  };
+
   const togglePasswordVisibility = (field) => {
-    setShowPasswords(prev => ({
+    setShowPassword(prev => ({
       ...prev,
       [field]: !prev[field]
     }));
   };
 
-  const handleSave = () => {
-    // Simulation de sauvegarde
-    alert('Paramètres sauvegardés avec succès !');
-  };
-
-  const handleBackup = () => {
-    // Simulation de sauvegarde
-    const backup = {
-      timestamp: new Date().toISOString(),
-      settings: settings
-    };
-    
-    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `cheebo-backup-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
   const renderGeneralSettings = () => (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Nom du site</label>
-          <input
-            type="text"
-            value={settings.general.siteName}
-            onChange={(e) => handleSettingChange('general', 'siteName', e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">URL du site</label>
-          <input
-            type="url"
-            value={settings.general.siteUrl}
-            onChange={(e) => handleSettingChange('general', 'siteUrl', e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-          />
-        </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Nom du site
+        </label>
+        <input
+          type="text"
+          value={settings.siteName}
+          onChange={(e) => handleInputChange('general', 'siteName', e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+        />
       </div>
       
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Description du site</label>
-        <textarea
-          value={settings.general.siteDescription}
-          onChange={(e) => handleSettingChange('general', 'siteDescription', e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-          rows="3"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Email de contact</label>
-          <input
-            type="email"
-            value={settings.general.contactEmail}
-            onChange={(e) => handleSettingChange('general', 'contactEmail', e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Fuseau horaire</label>
-          <select
-            value={settings.general.timezone}
-            onChange={(e) => handleSettingChange('general', 'timezone', e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-          >
-            <option value="Europe/Paris">Europe/Paris</option>
-            <option value="UTC">UTC</option>
-            <option value="America/New_York">America/New_York</option>
-          </select>
-        </div>
-      </div>
-
-      <div className="flex items-center">
-        <input
-          type="checkbox"
-          id="maintenanceMode"
-          checked={settings.general.maintenanceMode}
-          onChange={(e) => handleSettingChange('general', 'maintenanceMode', e.target.checked)}
-          className="mr-2"
-        />
-        <label htmlFor="maintenanceMode" className="text-sm font-medium text-gray-700">
-          Mode maintenance
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Description du site
         </label>
+        <textarea
+          value={settings.siteDescription}
+          onChange={(e) => handleInputChange('general', 'siteDescription', e.target.value)}
+          rows={3}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+        />
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          URL du site
+        </label>
+        <input
+          type="url"
+          value={settings.siteUrl}
+          onChange={(e) => handleInputChange('general', 'siteUrl', e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+        />
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Email administrateur
+        </label>
+        <input
+          type="email"
+          value={settings.adminEmail}
+          onChange={(e) => handleInputChange('general', 'adminEmail', e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+        />
       </div>
     </div>
   );
 
   const renderSecuritySettings = () => (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="flex items-center justify-between">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Longueur minimale du mot de passe</label>
-          <input
-            type="number"
-            min="6"
-            max="32"
-            value={settings.security.passwordMinLength}
-            onChange={(e) => handleSettingChange('security', 'passwordMinLength', parseInt(e.target.value))}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-          />
+          <h3 className="text-sm font-medium text-gray-700">Authentification à deux facteurs</h3>
+          <p className="text-sm text-gray-500">Ajouter une couche de sécurité supplémentaire</p>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Tentatives de connexion max</label>
-          <input
-            type="number"
-            min="3"
-            max="10"
-            value={settings.security.maxLoginAttempts}
-            onChange={(e) => handleSettingChange('security', 'maxLoginAttempts', parseInt(e.target.value))}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-          />
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <div className="flex items-center">
+        <label className="relative inline-flex items-center cursor-pointer">
           <input
             type="checkbox"
-            id="requireSpecialChars"
-            checked={settings.security.requireSpecialChars}
-            onChange={(e) => handleSettingChange('security', 'requireSpecialChars', e.target.checked)}
-            className="mr-2"
+            checked={settings.twoFactorAuth}
+            onChange={(e) => handleInputChange('security', 'twoFactorAuth', e.target.checked)}
+            className="sr-only peer"
           />
-          <label htmlFor="requireSpecialChars" className="text-sm font-medium text-gray-700">
-            Exiger des caractères spéciaux dans les mots de passe
-          </label>
-        </div>
-        
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="enableTwoFactor"
-            checked={settings.security.enableTwoFactor}
-            onChange={(e) => handleSettingChange('security', 'enableTwoFactor', e.target.checked)}
-            className="mr-2"
-          />
-          <label htmlFor="enableTwoFactor" className="text-sm font-medium text-gray-700">
-            Activer l'authentification à deux facteurs
-          </label>
-        </div>
-        
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="blockSuspiciousIPs"
-            checked={settings.security.blockSuspiciousIPs}
-            onChange={(e) => handleSettingChange('security', 'blockSuspiciousIPs', e.target.checked)}
-            className="mr-2"
-          />
-          <label htmlFor="blockSuspiciousIPs" className="text-sm font-medium text-gray-700">
-            Bloquer les adresses IP suspectes
-          </label>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderEmailSettings = () => (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Serveur SMTP</label>
-          <input
-            type="text"
-            value={settings.email.smtpHost}
-            onChange={(e) => handleSettingChange('email', 'smtpHost', e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Port SMTP</label>
-          <input
-            type="number"
-            value={settings.email.smtpPort}
-            onChange={(e) => handleSettingChange('email', 'smtpPort', parseInt(e.target.value))}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Nom d'utilisateur SMTP</label>
-          <input
-            type="text"
-            value={settings.email.smtpUsername}
-            onChange={(e) => handleSettingChange('email', 'smtpUsername', e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Mot de passe SMTP</label>
-          <div className="relative">
-            <input
-              type={showPasswords.smtp ? 'text' : 'password'}
-              value={settings.email.smtpPassword}
-              onChange={(e) => handleSettingChange('email', 'smtpPassword', e.target.value)}
-              className="w-full p-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-            />
-            <button
-              type="button"
-              onClick={() => togglePasswordVisibility('smtp')}
-              className="absolute right-2 top-2.5 text-gray-400"
-            >
-              {showPasswords.smtp ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex items-center">
-        <input
-          type="checkbox"
-          id="enableEmailNotifications"
-          checked={settings.email.enableEmailNotifications}
-          onChange={(e) => handleSettingChange('email', 'enableEmailNotifications', e.target.checked)}
-          className="mr-2"
-        />
-        <label htmlFor="enableEmailNotifications" className="text-sm font-medium text-gray-700">
-          Activer les notifications par email
+          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8657ff]"></div>
         </label>
       </div>
-    </div>
-  );
-
-  const renderShopSettings = () => (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Devise</label>
-          <select
-            value={settings.shop.currency}
-            onChange={(e) => handleSettingChange('shop', 'currency', e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-          >
-            <option value="EUR">Euro (€)</option>
-            <option value="USD">Dollar ($)</option>
-            <option value="GBP">Livre (£)</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Taux de TVA (%)</label>
-          <input
-            type="number"
-            step="0.1"
-            value={settings.shop.taxRate}
-            onChange={(e) => handleSettingChange('shop', 'taxRate', parseFloat(e.target.value))}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-          />
-        </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Délai d'expiration de session (minutes)
+        </label>
+        <input
+          type="number"
+          value={settings.sessionTimeout}
+          onChange={(e) => handleInputChange('security', 'sessionTimeout', parseInt(e.target.value))}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+        />
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Frais de livraison (€)</label>
-          <input
-            type="number"
-            step="0.01"
-            value={settings.shop.shippingCost}
-            onChange={(e) => handleSettingChange('shop', 'shippingCost', parseFloat(e.target.value))}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Seuil livraison gratuite (€)</label>
-          <input
-            type="number"
-            step="0.01"
-            value={settings.shop.freeShippingThreshold}
-            onChange={(e) => handleSettingChange('shop', 'freeShippingThreshold', parseFloat(e.target.value))}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-          />
-        </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Tentatives de connexion maximales
+        </label>
+        <input
+          type="number"
+          value={settings.maxLoginAttempts}
+          onChange={(e) => handleInputChange('security', 'maxLoginAttempts', parseInt(e.target.value))}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+        />
       </div>
-
-      <div className="space-y-3">
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="enableInventoryTracking"
-            checked={settings.shop.enableInventoryTracking}
-            onChange={(e) => handleSettingChange('shop', 'enableInventoryTracking', e.target.checked)}
-            className="mr-2"
-          />
-          <label htmlFor="enableInventoryTracking" className="text-sm font-medium text-gray-700">
-            Activer le suivi des stocks
-          </label>
-        </div>
-        
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="autoApproveProducts"
-            checked={settings.shop.autoApproveProducts}
-            onChange={(e) => handleSettingChange('shop', 'autoApproveProducts', e.target.checked)}
-            className="mr-2"
-          />
-          <label htmlFor="autoApproveProducts" className="text-sm font-medium text-gray-700">
-            Approuver automatiquement les nouveaux produits
-          </label>
-        </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Longueur minimale du mot de passe
+        </label>
+        <input
+          type="number"
+          value={settings.passwordMinLength}
+          onChange={(e) => handleInputChange('security', 'passwordMinLength', parseInt(e.target.value))}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+        />
       </div>
-    </div>
-  );
-
-  const renderCommunitySettings = () => (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      
+      <div className="flex items-center justify-between">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Taille max fichier (MB)</label>
-          <input
-            type="number"
-            min="1"
-            max="100"
-            value={settings.community.maxFileSize}
-            onChange={(e) => handleSettingChange('community', 'maxFileSize', parseInt(e.target.value))}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-          />
+          <h3 className="text-sm font-medium text-gray-700">Caractères spéciaux obligatoires</h3>
+          <p className="text-sm text-gray-500">Exiger des caractères spéciaux dans les mots de passe</p>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Types de fichiers autorisés</label>
-          <input
-            type="text"
-            value={settings.community.allowedFileTypes}
-            onChange={(e) => handleSettingChange('community', 'allowedFileTypes', e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-            placeholder="jpg,png,gif,mp4"
-          />
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <div className="flex items-center">
+        <label className="relative inline-flex items-center cursor-pointer">
           <input
             type="checkbox"
-            id="autoApproveUsers"
-            checked={settings.community.autoApproveUsers}
-            onChange={(e) => handleSettingChange('community', 'autoApproveUsers', e.target.checked)}
-            className="mr-2"
+            checked={settings.requireSpecialChars}
+            onChange={(e) => handleInputChange('security', 'requireSpecialChars', e.target.checked)}
+            className="sr-only peer"
           />
-          <label htmlFor="autoApproveUsers" className="text-sm font-medium text-gray-700">
-            Approuver automatiquement les nouveaux utilisateurs
-          </label>
-        </div>
-        
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="requireEmailVerification"
-            checked={settings.community.requireEmailVerification}
-            onChange={(e) => handleSettingChange('community', 'requireEmailVerification', e.target.checked)}
-            className="mr-2"
-          />
-          <label htmlFor="requireEmailVerification" className="text-sm font-medium text-gray-700">
-            Exiger la vérification par email
-          </label>
-        </div>
-        
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="moderateComments"
-            checked={settings.community.moderateComments}
-            onChange={(e) => handleSettingChange('community', 'moderateComments', e.target.checked)}
-            className="mr-2"
-          />
-          <label htmlFor="moderateComments" className="text-sm font-medium text-gray-700">
-            Modérer les commentaires
-          </label>
-        </div>
-        
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="allowFileUploads"
-            checked={settings.community.allowFileUploads}
-            onChange={(e) => handleSettingChange('community', 'allowFileUploads', e.target.checked)}
-            className="mr-2"
-          />
-          <label htmlFor="allowFileUploads" className="text-sm font-medium text-gray-700">
-            Autoriser le téléchargement de fichiers
-          </label>
-        </div>
+          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8657ff]"></div>
+        </label>
       </div>
     </div>
   );
 
   const renderNotificationSettings = () => (
     <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-gray-800">Notifications administrateur</h3>
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-medium text-gray-700">Notifications par email</h3>
+          <p className="text-sm text-gray-500">Recevoir les notifications par email</p>
+        </div>
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            checked={settings.emailNotifications}
+            onChange={(e) => handleInputChange('notifications', 'emailNotifications', e.target.checked)}
+            className="sr-only peer"
+          />
+          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8657ff]"></div>
+        </label>
+      </div>
       
-      <div className="space-y-3">
-        {Object.entries(settings.notifications).map(([key, value]) => {
-          const labels = {
-            newUserRegistration: 'Nouveau utilisateur inscrit',
-            newPost: 'Nouvelle publication',
-            newOrder: 'Nouvelle commande',
-            reportedContent: 'Contenu signalé',
-            systemAlerts: 'Alertes système',
-            emailDigest: 'Résumé par email'
-          };
-          
-          return (
-            <div key={key} className="flex items-center">
-              <input
-                type="checkbox"
-                id={key}
-                checked={value}
-                onChange={(e) => handleSettingChange('notifications', key, e.target.checked)}
-                className="mr-2"
-              />
-              <label htmlFor={key} className="text-sm font-medium text-gray-700">
-                {labels[key]}
-              </label>
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-medium text-gray-700">Notifications push</h3>
+          <p className="text-sm text-gray-500">Recevoir les notifications push sur navigateur</p>
+        </div>
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            checked={settings.pushNotifications}
+            onChange={(e) => handleInputChange('notifications', 'pushNotifications', e.target.checked)}
+            className="sr-only peer"
+          />
+          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8657ff]"></div>
+        </label>
+      </div>
+      
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-medium text-gray-700">Notifications SMS</h3>
+          <p className="text-sm text-gray-500">Recevoir les notifications par SMS</p>
+        </div>
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            checked={settings.smsNotifications}
+            onChange={(e) => handleInputChange('notifications', 'smsNotifications', e.target.checked)}
+            className="sr-only peer"
+          />
+          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8657ff]"></div>
+        </label>
+      </div>
+      
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-medium text-gray-700">Rapports hebdomadaires</h3>
+          <p className="text-sm text-gray-500">Recevoir un rapport d'activité chaque semaine</p>
+        </div>
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            checked={settings.weeklyReports}
+            onChange={(e) => handleInputChange('notifications', 'weeklyReports', e.target.checked)}
+            className="sr-only peer"
+          />
+          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8657ff]"></div>
+        </label>
+      </div>
+    </div>
+  );
+
+  const renderModerationSettings = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-medium text-gray-700">Modération automatique</h3>
+          <p className="text-sm text-gray-500">Activer la modération automatique des contenus</p>
+        </div>
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            checked={settings.autoModeration}
+            onChange={(e) => handleInputChange('moderation', 'autoModeration', e.target.checked)}
+            className="sr-only peer"
+          />
+          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8657ff]"></div>
+        </label>
+      </div>
+      
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-medium text-gray-700">Filtre de mots inappropriés</h3>
+          <p className="text-sm text-gray-500">Filtrer automatiquement les mots inappropriés</p>
+        </div>
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            checked={settings.badWordsFilter}
+            onChange={(e) => handleInputChange('moderation', 'badWordsFilter', e.target.checked)}
+            className="sr-only peer"
+          />
+          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8657ff]"></div>
+        </label>
+      </div>
+      
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-medium text-gray-700">Modération d'images</h3>
+          <p className="text-sm text-gray-500">Vérifier automatiquement le contenu des images</p>
+        </div>
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            checked={settings.imageModeration}
+            onChange={(e) => handleInputChange('moderation', 'imageModeration', e.target.checked)}
+            className="sr-only peer"
+          />
+          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8657ff]"></div>
+        </label>
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Posts maximum par jour par utilisateur
+        </label>
+        <input
+          type="number"
+          value={settings.maxPostsPerDay}
+          onChange={(e) => handleInputChange('moderation', 'maxPostsPerDay', parseInt(e.target.value))}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+        />
+      </div>
+    </div>
+  );
+
+  const renderEcommerceSettings = () => (
+    <div className="space-y-6">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Devise
+        </label>
+        <select
+          value={settings.currency}
+          onChange={(e) => handleInputChange('ecommerce', 'currency', e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+        >
+          <option value="EUR">Euro (€)</option>
+          <option value="USD">Dollar US ($)</option>
+          <option value="GBP">Livre Sterling (£)</option>
+        </select>
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Taux de TVA (%)
+        </label>
+        <input
+          type="number"
+          step="0.1"
+          value={settings.taxRate}
+          onChange={(e) => handleInputChange('ecommerce', 'taxRate', parseFloat(e.target.value))}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+        />
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Seuil de livraison gratuite (€)
+        </label>
+        <input
+          type="number"
+          value={settings.freeShippingThreshold}
+          onChange={(e) => handleInputChange('ecommerce', 'freeShippingThreshold', parseInt(e.target.value))}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+        />
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Période de retour (jours)
+        </label>
+        <input
+          type="number"
+          value={settings.returnPeriod}
+          onChange={(e) => handleInputChange('ecommerce', 'returnPeriod', parseInt(e.target.value))}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+        />
+      </div>
+    </div>
+  );
+
+  const renderAppearanceSettings = () => (
+    <div className="space-y-6">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Couleur principale
+        </label>
+        <div className="flex items-center space-x-3">
+          <input
+            type="color"
+            value={settings.primaryColor}
+            onChange={(e) => handleInputChange('appearance', 'primaryColor', e.target.value)}
+            className="w-12 h-10 border border-gray-300 rounded cursor-pointer"
+          />
+          <input
+            type="text"
+            value={settings.primaryColor}
+            onChange={(e) => handleInputChange('appearance', 'primaryColor', e.target.value)}
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+          />
+        </div>
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Couleur secondaire
+        </label>
+        <div className="flex items-center space-x-3">
+          <input
+            type="color"
+            value={settings.secondaryColor}
+            onChange={(e) => handleInputChange('appearance', 'secondaryColor', e.target.value)}
+            className="w-12 h-10 border border-gray-300 rounded cursor-pointer"
+          />
+          <input
+            type="text"
+            value={settings.secondaryColor}
+            onChange={(e) => handleInputChange('appearance', 'secondaryColor', e.target.value)}
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+          />
+        </div>
+      </div>
+      
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-medium text-gray-700">Mode sombre</h3>
+          <p className="text-sm text-gray-500">Activer le thème sombre par défaut</p>
+        </div>
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            checked={settings.darkMode}
+            onChange={(e) => handleInputChange('appearance', 'darkMode', e.target.checked)}
+            className="sr-only peer"
+          />
+          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8657ff]"></div>
+        </label>
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Logo personnalisé
+        </label>
+        <div className="flex items-center space-x-3">
+          <button className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">
+            <Upload className="w-4 h-4" />
+            Télécharger
+          </button>
+          <span className="text-sm text-gray-500">
+            {settings.customLogo ? 'Logo personnalisé uploadé' : 'Aucun logo personnalisé'}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderIntegrationsSettings = () => (
+    <div className="space-y-6">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Clé API Email (SendGrid/Mailgun)
+        </label>
+        <div className="relative">
+          <input
+            type={showPassword.emailApiKey ? "text" : "password"}
+            value={settings.emailApiKey}
+            onChange={(e) => handleInputChange('integrations', 'emailApiKey', e.target.value)}
+            placeholder="sk-..."
+            className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+          />
+          <button
+            type="button"
+            onClick={() => togglePasswordVisibility('emailApiKey')}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+          >
+            {showPassword.emailApiKey ? (
+              <EyeOff className="h-4 w-4 text-gray-400" />
+            ) : (
+              <Eye className="h-4 w-4 text-gray-400" />
+            )}
+          </button>
+        </div>
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Clé API SMS (Twilio)
+        </label>
+        <div className="relative">
+          <input
+            type={showPassword.smsApiKey ? "text" : "password"}
+            value={settings.smsApiKey}
+            onChange={(e) => handleInputChange('integrations', 'smsApiKey', e.target.value)}
+            placeholder="AC..."
+            className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+          />
+          <button
+            type="button"
+            onClick={() => togglePasswordVisibility('smsApiKey')}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+          >
+            {showPassword.smsApiKey ? (
+              <EyeOff className="h-4 w-4 text-gray-400" />
+            ) : (
+              <Eye className="h-4 w-4 text-gray-400" />
+            )}
+          </button>
+        </div>
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Clé API Paiement (Stripe)
+        </label>
+        <div className="relative">
+          <input
+            type={showPassword.paymentApiKey ? "text" : "password"}
+            value={settings.paymentApiKey}
+            onChange={(e) => handleInputChange('integrations', 'paymentApiKey', e.target.value)}
+            placeholder="pk_..."
+            className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+          />
+          <button
+            type="button"
+            onClick={() => togglePasswordVisibility('paymentApiKey')}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+          >
+            {showPassword.paymentApiKey ? (
+              <EyeOff className="h-4 w-4 text-gray-400" />
+            ) : (
+              <Eye className="h-4 w-4 text-gray-400" />
+            )}
+          </button>
+        </div>
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Clé API Cloudinary (Images)
+        </label>
+        <div className="relative">
+          <input
+            type={showPassword.cloudinaryApiKey ? "text" : "password"}
+            value={settings.cloudinaryApiKey}
+            onChange={(e) => handleInputChange('integrations', 'cloudinaryApiKey', e.target.value)}
+            placeholder="123456789012345"
+            className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8657ff] focus:border-transparent"
+          />
+          <button
+            type="button"
+            onClick={() => togglePasswordVisibility('cloudinaryApiKey')}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+          >
+            {showPassword.cloudinaryApiKey ? (
+              <EyeOff className="h-4 w-4 text-gray-400" />
+            ) : (
+              <Eye className="h-4 w-4 text-gray-400" />
+            )}
+          </button>
+        </div>
+      </div>
+      
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <div className="flex">
+          <AlertCircle className="h-5 w-5 text-yellow-400" />
+          <div className="ml-3">
+            <h3 className="text-sm font-medium text-yellow-800">
+              Sécurité des clés API
+            </h3>
+            <div className="mt-2 text-sm text-yellow-700">
+              <p>
+                Gardez vos clés API secrètes et ne les partagez jamais. 
+                Utilisez des variables d'environnement en production.
+              </p>
             </div>
-          );
-        })}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -547,54 +649,24 @@ const AdminSettings = () => {
         return renderGeneralSettings();
       case 'security':
         return renderSecuritySettings();
-      case 'email':
-        return renderEmailSettings();
-      case 'shop':
-        return renderShopSettings();
-      case 'community':
-        return renderCommunitySettings();
       case 'notifications':
         return renderNotificationSettings();
+      case 'moderation':
+        return renderModerationSettings();
+      case 'ecommerce':
+        return renderEcommerceSettings();
+      case 'appearance':
+        return renderAppearanceSettings();
+      case 'integrations':
+        return renderIntegrationsSettings();
       default:
         return renderGeneralSettings();
     }
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <aside className="w-64 bg-[#8657ff] text-white p-6">
-        <h2 className="text-2xl font-bold mb-6">Admin Panel</h2>
-        <nav className="space-y-4">
-          <Link to="/admin/dashboard" className="block hover:text-gray-300">
-            📊 Tableau de bord
-          </Link>
-          <Link to="/admin/users" className="block hover:text-gray-300">
-            👤 Gestion des utilisateurs
-          </Link>
-          <Link to="/admin/product" className="block hover:text-gray-300">
-            📝 Gestion des produits
-          </Link>
-          <Link to="/admin/posts" className="block hover:text-gray-300">
-            📄 Gestion des posts
-          </Link>
-          <Link to="/admin/orders" className="block hover:text-gray-300">
-            🛒 Gestion des commandes
-          </Link>
-          <Link to="/admin/stats" className="block hover:text-gray-300">
-            📈 Statistiques
-          </Link>
-          <Link to="/admin/settings" className="block text-yellow-300 font-semibold">
-            ⚙️ Paramètres
-          </Link>
-          <Link to="/" className="block text-red-300 hover:text-red-200">
-            🔓 Déconnexion
-          </Link>
-        </nav>
-      </aside>
-
-      {/* Main content */}
-      <main className="flex-1 p-10">
+    <AdminLayout>
+      <div className="p-10">
         <div className="mb-6 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold mb-2 text-[#8657ff]">Paramètres Système</h1>
@@ -611,45 +683,63 @@ const AdminSettings = () => {
             </button>
             <button
               onClick={handleSave}
-              className="flex items-center gap-2 bg-[#8657ff] hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium"
+              disabled={isSaving}
+              className="flex items-center gap-2 bg-[#8657ff] hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
-              Enregistrer
+              {isSaving ? 'Enregistrement...' : 'Enregistrer'}
             </button>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
-          {/* Onglets */}
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6">
-              {tabs.map(tab => {
-                const IconComponent = tab.icon;
+        {/* Message de sauvegarde */}
+        {saveMessage && (
+          <div className="mb-6 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+            <CheckCircle className="w-5 h-5" />
+            <span>{saveMessage}</span>
+          </div>
+        )}
+
+        <div className="flex gap-6">
+          {/* Sidebar des onglets */}
+          <div className="w-64 bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+            <nav className="space-y-2">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm ${
+                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors ${
                       activeTab === tab.id
-                        ? 'border-[#8657ff] text-[#8657ff]'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        ? 'bg-[#8657ff] text-white'
+                        : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
-                    <IconComponent className="w-4 h-4" />
-                    {tab.label}
+                    <Icon className="w-4 h-4" />
+                    <span className="text-sm font-medium">{tab.label}</span>
                   </button>
                 );
               })}
             </nav>
           </div>
 
-          {/* Contenu des onglets */}
-          <div className="p-6">
+          {/* Contenu principal */}
+          <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold text-gray-900">
+                {tabs.find(tab => tab.id === activeTab)?.label}
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">
+                Configurez les paramètres de cette section
+              </p>
+            </div>
+            
             {renderTabContent()}
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </AdminLayout>
   );
 };
 
