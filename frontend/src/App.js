@@ -12,7 +12,7 @@ import Profile from './pages/Profile';
 import Pets from './pages/pets'; // Assure-toi que ce fichier s'appelle pets.jsx
 import Vet from './pages/vet';   // Assure-toi que ce fichier s'appelle vet.jsx
 import ResetPassword from './pages/ResetPassword';
-
+import Accueil from './pages/Accueil';
 // Admin Components
 import AdminProduct from './pages/admin_pages/AdminProduct';
 import AdminUsers from './pages/admin_pages/AdminUsers';
@@ -106,6 +106,7 @@ function App() {
         <Route path="/pets" element={<Pets />} />
         <Route path="/vet" element={<Vet />} />
         <Route path="/adoption" element={<Adoption />} />
+        <Route path="/accueil" element={<Accueil />} />
       </Routes>
     </Router>
   );
