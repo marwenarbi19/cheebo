@@ -22,6 +22,7 @@ import AdminStats from './pages/admin_pages/AdminStats';
 import AdminOrders from './pages/admin_pages/AdminOrders';
 import AdminSettings from './pages/admin_pages/AdminSettings';
 import AdminReports from './pages/admin_pages/AdminReports';
+import AdminVets from './pages/admin_pages/AdminVets';
 
 function App() {
   return (
@@ -41,6 +42,14 @@ function App() {
           element={
             <AdminRoute>
               <AdminProduct />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/vets"
+          element={
+            <AdminRoute>
+              <AdminVets />
             </AdminRoute>
           }
         />

@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import AdminLayout from '../pages/admin_pages/AdminLayout';
+import AdminLayout from './AdminLayout';
 
 import { 
   Search, 
-  
   Eye, 
   Edit,
   Trash2,
@@ -11,11 +10,9 @@ import {
   XCircle,
   Clock,
   Stethoscope,
-  
   MapPin,
   Phone,
   Mail,
-
   Star,
   Shield,
   Download,
@@ -231,6 +228,9 @@ const AdminVets = () => {
         if (window.confirm(`Supprimer ${selectedVets.length} vétérinaire(s) ?`)) {
           setVets(prev => prev.filter(vet => !selectedVets.includes(vet.id)));
         }
+        break;
+      default:
+        console.warn(`Unhandled bulk action: ${action}`);
         break;
     }
     setSelectedVets([]);
