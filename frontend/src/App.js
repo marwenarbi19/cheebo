@@ -12,7 +12,8 @@ import Profile from './pages/Profile';
 import Pets from './pages/pets'; // Assure-toi que ce fichier s'appelle pets.jsx
 import Vet from './pages/vet';   // Assure-toi que ce fichier s'appelle vet.jsx
 import ResetPassword from './pages/ResetPassword';
-import Accueil from './pages/Accueil';
+import Accueil from './pages/Accueil'; // Import de la page d'accueil
+
 // Admin Components
 import AdminProduct from './pages/admin_pages/AdminProduct';
 import AdminUsers from './pages/admin_pages/AdminUsers';
@@ -20,10 +21,7 @@ import AdminPosts from './pages/admin_pages/AdminPosts';
 import AdminStats from './pages/admin_pages/AdminStats';
 import AdminOrders from './pages/admin_pages/AdminOrders';
 import AdminSettings from './pages/admin_pages/AdminSettings';
-
 import AdminReports from './pages/admin_pages/AdminReports';
-
-
 
 function App() {
   return (
@@ -97,7 +95,8 @@ function App() {
         />
 
         {/* Public routes */}
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Accueil />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/home" element={<Home />} />
@@ -106,7 +105,6 @@ function App() {
         <Route path="/pets" element={<Pets />} />
         <Route path="/vet" element={<Vet />} />
         <Route path="/adoption" element={<Adoption />} />
-        <Route path="/accueil" element={<Accueil />} />
       </Routes>
     </Router>
   );
