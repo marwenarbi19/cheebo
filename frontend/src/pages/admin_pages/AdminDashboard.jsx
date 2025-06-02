@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { Users, FileText, ShoppingCart, TrendingUp, AlertTriangle,Heart,MessageSquare,Activity,DollarSign,PawPrint,Stethoscope,Calendar,Bell} from "lucide-react";
+import AdminLayout from './AdminLayout';
+import { Users, FileText, ShoppingCart, TrendingUp, AlertTriangle, Heart, MessageSquare, Activity, DollarSign, PawPrint, Stethoscope, Calendar, Bell } from "lucide-react";
 
 const AdminDashboard = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('today');
@@ -183,52 +183,25 @@ const AdminDashboard = () => {
               <p className="text-sm text-gray-600">{alert.message}</p>
             </div>
           </div>
-          <Link
-            to={alert.link}
+          <a
+            href={alert.link}
             className={`text-sm font-medium hover:underline ${iconStyles[alert.type]}`}
           >
             {alert.action}
-          </Link>
+          </a>
         </div>
       </div>
     );
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <aside className="w-64 bg-[#8657ff] text-white p-6">
-        <h2 className="text-2xl font-bold mb-6">Admin Panel</h2>
-        <nav className="space-y-4">
-          <Link to="/admin/dashboard" className="block text-yellow-300 font-semibold">
-            📊 Tableau de bord
-          </Link>
-          <Link to="/admin/users" className="block hover:text-gray-300">
-            👤 Gestion des utilisateurs
-          </Link>
-          <Link to="/admin/product" className="block hover:text-gray-300">
-            📝 Gestion des produits
-          </Link>
-          <Link to="/admin/posts" className="block hover:text-gray-300">
-            📄 Gestion des posts
-          </Link>
-          <Link to="/admin/stats" className="block hover:text-gray-300">
-            📈 Statistiques
-          </Link>
-          <Link to="/" className="block text-red-300 hover:text-red-200">
-            🔓 Déconnexion
-          </Link>
-        </nav>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 p-10">
+    <AdminLayout>
+      <div className="p-10">
         <div className="mb-6 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold mb-2 text-[#8657ff]">Tableau de bord Admin</h1>
             <p className="text-gray-600">Vue d'ensemble de la plateforme Cheebo</p>
           </div>
-          
           <select
             value={selectedPeriod}
             onChange={(e) => setSelectedPeriod(e.target.value)}
@@ -308,12 +281,12 @@ const AdminDashboard = () => {
               })}
             </div>
             <div className="mt-4 text-center">
-              <Link 
-                to="/admin/stats" 
+              <a 
+                href="/admin/stats" 
                 className="text-[#8657ff] hover:text-purple-700 font-medium text-sm"
               >
                 Voir toutes les activités →
-              </Link>
+              </a>
             </div>
           </div>
 
@@ -348,12 +321,12 @@ const AdminDashboard = () => {
               ))}
             </div>
             <div className="mt-4 text-center">
-              <Link 
-                to="/admin/posts" 
+              <a 
+                href="/admin/posts" 
                 className="text-[#8657ff] hover:text-purple-700 font-medium text-sm"
               >
                 Gérer les posts →
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -395,38 +368,38 @@ const AdminDashboard = () => {
         <div className="mt-8 bg-white rounded-xl p-6 shadow-md">
           <h3 className="text-lg font-semibold mb-4 text-gray-800">Actions Rapides</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Link
-              to="/admin/users"
+            <a
+              href="/admin/users"
               className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-colors"
             >
               <Users className="w-8 h-8 text-purple-500 mb-2" />
               <span className="text-sm font-medium">Gérer Utilisateurs</span>
-            </Link>
-            <Link
-              to="/admin/posts"
+            </a>
+            <a
+              href="/admin/posts"
               className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-colors"
             >
               <FileText className="w-8 h-8 text-purple-500 mb-2" />
               <span className="text-sm font-medium">Modérer Posts</span>
-            </Link>
-            <Link
-              to="/admin/product"
+            </a>
+            <a
+              href="/admin/products" // Corrigé de "/admin/product" à "/admin/products"
               className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-colors"
             >
               <ShoppingCart className="w-8 h-8 text-purple-500 mb-2" />
               <span className="text-sm font-medium">Gérer Produits</span>
-            </Link>
-            <Link
-              to="/admin/stats"
+            </a>
+            <a
+              href="/admin/stats"
               className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-colors"
             >
               <Activity className="w-8 h-8 text-purple-500 mb-2" />
               <span className="text-sm font-medium">Voir Stats</span>
-            </Link>
+            </a>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </AdminLayout>
   );
 };
 

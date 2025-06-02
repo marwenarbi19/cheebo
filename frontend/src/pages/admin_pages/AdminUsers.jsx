@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, Filter, Edit, Trash2, Ban, CheckCircle, Mail, Phone, MapPin, Calendar, User, Crown } from 'lucide-react';
+import AdminLayout from './AdminLayout';
+import { Search, Edit, Trash2, Mail, Phone, MapPin, Calendar, User, Crown } from 'lucide-react';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([
@@ -141,8 +141,9 @@ const AdminUsers = () => {
       ));
     } else {
       // Ajouter nouvel utilisateur
+      const maxId = users.length > 0 ? Math.max(...users.map(u => u.id)) : 0;
       const newUser = {
-        id: Math.max(...users.map(u => u.id)) + 1,
+        id: maxId + 1,
         ...formData,
         joinDate: new Date().toISOString().split('T')[0],
         lastLogin: '-',
@@ -185,10 +186,12 @@ const AdminUsers = () => {
       case 'delete':
         if (window.confirm(`Supprimer ${selectedUsers.length} utilisateur(s) ?`)) {
           setUsers(prev => prev.filter(user => !selectedUsers.includes(user.id)));
+          setSelectedUsers([]);
         }
         break;
+      default:
+        break;
     }
-    setSelectedUsers([]);
   };
 
   const getStatusBadge = (status) => {
@@ -239,34 +242,8 @@ const AdminUsers = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <aside className="w-64 bg-[#8657ff] text-white p-6">
-        <h2 className="text-2xl font-bold mb-6">Admin Panel</h2>
-        <nav className="space-y-4">
-          <Link to="/admin/dashboard" className="block hover:text-gray-300">
-            📊 Tableau de bord
-          </Link>
-          <Link to="/admin/users" className="block text-yellow-300 font-semibold">
-            👤 Gestion des utilisateurs
-          </Link>
-          <Link to="/admin/product" className="block hover:text-gray-300">
-            📝 Gestion des produits
-          </Link>
-          <Link to="/admin/posts" className="block hover:text-gray-300">
-            📄 Gestion des posts
-          </Link>
-          <Link to="/admin/stats" className="block hover:text-gray-300">
-            📈 Statistiques
-          </Link>
-          <Link to="/" className="block text-red-300 hover:text-red-200">
-            🔓 Déconnexion
-          </Link>
-        </nav>
-      </aside>
-
-      {/* Main content */}
-      <main className="flex-1 p-10">
+    <AdminLayout>
+      <div className="p-10">
         <div className="mb-6">
           <h1 className="text-3xl font-bold mb-2 text-[#8657ff]">Gestion des Utilisateurs</h1>
           <p className="text-gray-600">Gérez les comptes utilisateurs de la plateforme</p>
@@ -277,7 +254,7 @@ const AdminUsers = () => {
           <div className="flex flex-col md:flex-row gap-4 mb-4">
             {/* Recherche */}
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
                 placeholder="Rechercher par nom ou email..."
@@ -312,7 +289,7 @@ const AdminUsers = () => {
 
             <button
               onClick={handleAddUser}
-              className="bg-[#8657ff] hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-medium transition"
+              className="bg-[#8657ff] hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
             >
               Ajouter utilisateur
             </button>
@@ -326,19 +303,19 @@ const AdminUsers = () => {
               </span>
               <button
                 onClick={() => handleBulkAction('activate')}
-                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm"
+                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition-colors"
               >
                 Activer
               </button>
               <button
                 onClick={() => handleBulkAction('suspend')}
-                className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm"
+                className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm transition-colors"
               >
                 Suspendre
               </button>
               <button
                 onClick={() => handleBulkAction('delete')}
-                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
+                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors"
               >
                 Supprimer
               </button>
@@ -349,110 +326,118 @@ const AdminUsers = () => {
         {/* Tableau des utilisateurs */}
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="p-4">
                     <input
                       type="checkbox"
-                      checked={selectedUsers.length === filteredUsers.length}
+                      checked={filteredUsers.length > 0 && selectedUsers.length === filteredUsers.length}
                       onChange={handleSelectAll}
-                      className="rounded border-gray-300"
+                      className="rounded border-gray-300 focus:ring-[#8657ff]"
                     />
                   </th>
-                  <th className="text-left p-4 font-semibold">Utilisateur</th>
-                  <th className="text-left p-4 font-semibold">Contact</th>
-                  <th className="text-left p-4 font-semibold">Rôle</th>
-                  <th className="text-left p-4 font-semibold">Statut</th>
-                  <th className="text-left p-4 font-semibold">Activité</th>
-                  <th className="text-left p-4 font-semibold">Inscription</th>
-                  <th className="text-left p-4 font-semibold">Actions</th>
+                  <th className="text-left p-4 font-semibold text-gray-600">Utilisateur</th>
+                  <th className="text-left p-4 font-semibold text-gray-600">Contact</th>
+                  <th className="text-left p-4 font-semibold text-gray-600">Rôle</th>
+                  <th className="text-left p-4 font-semibold text-gray-600">Statut</th>
+                  <th className="text-left p-4 font-semibold text-gray-600">Activité</th>
+                  <th className="text-left p-4 font-semibold text-gray-600">Inscription</th>
+                  <th className="text-left p-4 font-semibold text-gray-600">Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                {filteredUsers.map((user) => (
-                  <tr key={user.id} className="border-t border-gray-200 hover:bg-gray-50">
-                    <td className="p-4">
-                      <input
-                        type="checkbox"
-                        checked={selectedUsers.includes(user.id)}
-                        onChange={() => handleSelectUser(user.id)}
-                        className="rounded border-gray-300"
-                      />
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={user.avatar}
-                          alt={user.name}
-                          className="w-10 h-10 rounded-full object-cover"
-                          onError={(e) => {
-                            e.target.src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
-                          }}
-                        />
-                        <div>
-                          <div className="font-medium">{user.name}</div>
-                          <div className="text-sm text-gray-500">ID: {user.id}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2 text-sm">
-                          <Mail className="w-4 h-4 text-gray-400" />
-                          {user.email}
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <Phone className="w-4 h-4 text-gray-400" />
-                          {user.phone}
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <MapPin className="w-4 h-4 text-gray-400" />
-                          {user.address}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      {getRoleBadge(user.role)}
-                    </td>
-                    <td className="p-4">
-                      {getStatusBadge(user.status)}
-                    </td>
-                    <td className="p-4">
-                      <div className="text-sm">
-                        <div>{user.posts} posts</div>
-                        <div>{user.pets} animaux</div>
-                        <div className="text-gray-500">
-                          Dernière connexion: {user.lastLogin}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-2 text-sm">
-                        <Calendar className="w-4 h-4 text-gray-400" />
-                        {new Date(user.joinDate).toLocaleDateString('fr-FR')}
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleEditUser(user)}
-                          className="text-blue-600 hover:text-blue-800 p-1"
-                          title="Modifier"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteUser(user.id)}
-                          className="text-red-600 hover:text-red-800 p-1"
-                          title="Supprimer"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
+              <tbody className="divide-y divide-gray-200">
+                {filteredUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan="8" className="p-4 text-center text-gray-500">
+                      Aucun utilisateur trouvé
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  filteredUsers.map((user) => (
+                    <tr key={user.id} className="hover:bg-gray-50">
+                      <td className="p-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedUsers.includes(user.id)}
+                          onChange={() => handleSelectUser(user.id)}
+                          className="rounded border-gray-300 focus:ring-[#8657ff]"
+                        />
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={user.avatar}
+                            alt={user.name}
+                            className="w-10 h-10 rounded-full object-cover"
+                            onError={(e) => {
+                              e.target.src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
+                            }}
+                          />
+                          <div>
+                            <div className="font-medium text-gray-900">{user.name}</div>
+                            <div className="text-sm text-gray-500">ID: {user.id}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <Mail className="w-4 h-4 text-gray-400" />
+                            {user.email}
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <Phone className="w-4 h-4 text-gray-400" />
+                            {user.phone}
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <MapPin className="w-4 h-4 text-gray-400" />
+                            {user.address}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        {getRoleBadge(user.role)}
+                      </td>
+                      <td className="p-4">
+                        {getStatusBadge(user.status)}
+                      </td>
+                      <td className="p-4">
+                        <div className="text-sm text-gray-600">
+                          <div>{user.posts} posts</div>
+                          <div>{user.pets} animaux</div>
+                          <div className="text-gray-500">
+                            Dernière connexion: {user.lastLogin}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Calendar className="w-4 h-4 text-gray-400" />
+                          {new Date(user.joinDate).toLocaleDateString('fr-FR')}
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEditUser(user)}
+                            className="text-blue-600 hover:text-blue-800 p-1"
+                            title="Modifier"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteUser(user.id)}
+                            className="text-red-600 hover:text-red-800 p-1"
+                            title="Supprimer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -474,66 +459,84 @@ const AdminUsers = () => {
               </h3>
               
               <form onSubmit={handleSubmit} className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="Nom complet"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-                  required
-                />
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-                  required
-                />
-                <input
-                  type="tel"
-                  placeholder="Téléphone"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-                />
-                <input
-                  type="text"
-                  placeholder="Adresse"
-                  value={formData.address}
-                  onChange={(e) => setFormData({...formData, address: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-                />
-                <select
-                  value={formData.role}
-                  onChange={(e) => setFormData({...formData, role: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-                >
-                  <option value="user">Utilisateur</option>
-                  <option value="vet">Vétérinaire</option>
-                  <option value="admin">Administrateur</option>
-                </select>
-                <select
-                  value={formData.status}
-                  onChange={(e) => setFormData({...formData, status: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
-                >
-                  <option value="active">Actif</option>
-                  <option value="suspended">Suspendu</option>
-                  <option value="pending">En attente</option>
-                </select>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Nom complet</label>
+                  <input
+                    type="text"
+                    placeholder="Nom complet"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="mt-1 w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Email</label>
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="mt-1 w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Téléphone</label>
+                  <input
+                    type="tel"
+                    placeholder="Téléphone"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="mt-1 w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Adresse</label>
+                  <input
+                    type="text"
+                    placeholder="Adresse"
+                    value={formData.address}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    className="mt-1 w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Rôle</label>
+                  <select
+                    value={formData.role}
+                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                    className="mt-1 w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
+                  >
+                    <option value="user">Utilisateur</option>
+                    <option value="vet">Vétérinaire</option>
+                    <option value="admin">Administrateur</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Statut</label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                    className="mt-1 w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#8657ff]"
+                  >
+                    <option value="active">Actif</option>
+                    <option value="suspended">Suspendu</option>
+                    <option value="pending">En attente</option>
+                  </select>
+                </div>
                 
                 <div className="flex gap-3 pt-4">
                   <button
                     type="submit"
-                    className="flex-1 bg-[#8657ff] hover:bg-purple-700 text-white py-2 px-4 rounded font-medium"
+                    className="flex-1 bg-[#8657ff] hover:bg-purple-700 text-white py-2 px-4 rounded font-medium transition-colors"
                   >
                     {editingUser ? 'Modifier' : 'Ajouter'}
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded font-medium"
+                    className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded font-medium transition-colors"
                   >
                     Annuler
                   </button>
@@ -542,8 +545,8 @@ const AdminUsers = () => {
             </div>
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </AdminLayout>
   );
 };
 
