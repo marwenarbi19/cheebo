@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AdminRoute } from './routes/AdminRoutes'; // Assure-toi que c'est un export nommé
+import { AdminRoute } from './routes/AdminRoutes';
 
 // Pages
 import AdminDashboard from './pages/admin_pages/AdminDashboard';
@@ -9,18 +9,20 @@ import ProductDetail from './pages/Product';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Profile from './pages/Profile';
-import Pets from './pages/pets';        // si le fichier est pets.jsx
-import Vet from './pages/vet';          // si le fichier est vet.jsx
-import AdminProduct from './components/admin/AdminProduct';
-import AdminUsers from './components/admin/AdminUsers';
-import AdminPosts from './components/admin/AdminPosts';
-import AdminStats from './components/admin/AdminStats';
-import AdminOrders from './components/admin/AdminOrders';
-import AdminSettings from './components/admin/AdminSettings';
-import AdminVets from './components/admin/AdminVets';
-import AdminReports from './components/admin/AdminReports';
-
+import Pets from './pages/pets'; // Assure-toi que ce fichier s'appelle pets.jsx
+import Vet from './pages/vet';   // Assure-toi que ce fichier s'appelle vet.jsx
 import ResetPassword from './pages/ResetPassword';
+
+// Admin Components
+import AdminProduct from './pages/admin_pages/AdminProduct';
+import AdminUsers from './pages/admin_pages/AdminUsers';
+import AdminPosts from './pages/admin_pages/AdminPosts';
+import AdminStats from './pages/admin_pages/AdminStats';
+import AdminOrders from './pages/admin_pages/AdminOrders';
+import AdminSettings from './pages/admin_pages/AdminSettings';
+
+import AdminReports from './pages/admin_pages/AdminReports';
+
 
 
 function App() {
@@ -65,6 +67,31 @@ function App() {
           element={
             <AdminRoute>
               <AdminStats />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/orders"
+          element={
+            <AdminRoute>
+              <AdminOrders />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/settings"
+          element={
+            <AdminRoute>
+              <AdminSettings />
+            </AdminRoute>
+          }
+        />
+        
+        <Route
+          path="/admin/reports"
+          element={
+            <AdminRoute>
+              <AdminReports />
             </AdminRoute>
           }
         />

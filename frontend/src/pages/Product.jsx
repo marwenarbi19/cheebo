@@ -179,7 +179,7 @@ const ProductList = () => {
             </button>
             
             <button
-              onClick={() => setShowCart(!showCart)}
+              onClick={() => setShowCart(true)}
               className="relative flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
             >
               <ShoppingCart className="h-4 w-4" />
@@ -234,7 +234,7 @@ const ProductList = () => {
               
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  Prix: {priceRange[0]}€ - {priceRange[1]}€
+                  Prix: {priceRange[0]} DT - {priceRange[1]} DT
                 </label>
                 <input
                   type="range"
@@ -249,150 +249,146 @@ const ProductList = () => {
           </div>
         )}
 
-        <div className="flex gap-6">
-          {/* Liste des produits */}
-          <div className="flex-1">
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProducts.map((product) => (
-                <div key={product.id} className="bg-white dark:bg-dark-card p-6 rounded-lg shadow-md relative">
-                  {/* Bouton wishlist */}
-                  <button
-                    onClick={() => toggleWishlist(product)}
-                    className="absolute top-2 right-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    <Heart 
-                      className={`w-5 h-5 ${
-                        wishlist.some(item => item.id === product.id) 
-                          ? 'text-red-500 fill-red-500' 
-                          : 'text-gray-400'
-                      }`} 
+        {/* Liste des produits */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredProducts.map((product) => (
+            <div key={product.id} className="bg-white dark:bg-dark-card p-6 rounded-lg shadow-md relative">
+              <button
+                onClick={() => toggleWishlist(product)}
+                className="absolute top-2 right-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                <Heart 
+                  className={`w-5 h-5 ${
+                    wishlist.some(item => item.id === product.id) 
+                      ? 'text-red-500 fill-red-500' 
+                      : 'text-gray-400'
+                  }`} 
+                />
+              </button>
+
+              <img
+                src={product.images[0]}
+                alt={product.name}
+                className="rounded-lg w-full object-contain h-64 mb-4"
+              />
+              
+              <div className="space-y-2">
+                <span className="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
+                  {product.brand}
+                </span>
+                
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  {product.name}
+                </h2>
+
+                <div className="flex items-center space-x-2 mb-2">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-4 h-4 ${
+                        i < Math.floor(product.rating)
+                          ? 'text-yellow-400 fill-yellow-400'
+                          : 'text-gray-300'
+                      }`}
                     />
-                  </button>
+                  ))}
+                  <span className="text-sm text-gray-600 dark:text-gray-300">
+                    {product.rating} ({product.reviews} avis)
+                  </span>
+                </div>
 
-                  <img
-                    src={product.images[0]}
-                    alt={product.name}
-                    className="rounded-lg w-full object-contain h-64 mb-4"
-                  />
-                  
-                  <div className="space-y-2">
-                    <span className="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
-                      {product.brand}
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-lg font-bold text-primary">
+                    {product.price.toFixed(2)} DT
+                  </span>
+                  {product.oldPrice && (
+                    <span className="text-sm text-gray-500 line-through">
+                      {product.oldPrice.toFixed(2)} DT
                     </span>
-                    
-                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                      {product.name}
-                    </h2>
+                  )}
+                </div>
 
-                    <div className="flex items-center space-x-2 mb-2">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-4 h-4 ${
-                            i < Math.floor(product.rating)
-                              ? 'text-yellow-400 fill-yellow-400'
-                              : 'text-gray-300'
-                          }`}
-                        />
-                      ))}
-                      <span className="text-sm text-gray-600 dark:text-gray-300">
-                        {product.rating} ({product.reviews} avis)
-                      </span>
-                    </div>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
+                  {product.description.substring(0, 100)}...
+                </p>
 
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-lg font-bold text-primary">
-                        {product.price.toFixed(2)} €
-                      </span>
-                      {product.oldPrice && (
-                        <span className="text-sm text-gray-500 line-through">
-                          {product.oldPrice.toFixed(2)} €
-                        </span>
-                      )}
-                    </div>
+                <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+                  <span>Poids: {product.weight}</span>
+                  <span className={`${product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {product.stock > 0 ? `Stock: ${product.stock}` : 'Rupture de stock'}
+                  </span>
+                </div>
 
-                    <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
-                      {product.description.substring(0, 100)}...
-                    </p>
-
-                    <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
-                      <span>Poids: {product.weight}</span>
-                      <span className={`${product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {product.stock > 0 ? `Stock: ${product.stock}` : 'Rupture de stock'}
-                      </span>
-                    </div>
-
-                    {/* Contrôles quantité */}
-                    <div className="flex items-center space-x-2 mb-4">
-                      <span className="text-sm text-gray-700 dark:text-gray-300">Quantité:</span>
-                      <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-md">
-                        <button
-                          onClick={() => handleQuantityChange(product.id, -1, product.stock)}
-                          className="px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700"
-                          disabled={quantities[product.id] <= 1}
-                        >
-                          <Minus className="w-4 h-4" />
-                        </button>
-                        <span className="px-4 py-1 border-x border-gray-300 dark:border-gray-600">
-                          {quantities[product.id]}
-                        </span>
-                        <button
-                          onClick={() => handleQuantityChange(product.id, 1, product.stock)}
-                          className="px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700"
-                          disabled={quantities[product.id] >= product.stock}
-                        >
-                          <Plus className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-
+                <div className="flex items-center space-x-2 mb-4">
+                  <span className="text-sm text-gray-700 dark:text-gray-300">Quantité:</span>
+                  <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-md">
                     <button
-                      onClick={() => addToCart(product)}
-                      className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-2 px-4 rounded-lg"
-                      disabled={product.stock === 0}
+                      onClick={() => handleQuantityChange(product.id, -1, product.stock)}
+                      className="px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      disabled={quantities[product.id] <= 1}
                     >
-                      Ajouter au panier
+                      <Minus className="w-4 h-4" />
+                    </button>
+                    <span className="px-4 py-1 border-x border-gray-300 dark:border-gray-600">
+                      {quantities[product.id]}
+                    </span>
+                    <button
+                      onClick={() => handleQuantityChange(product.id, 1, product.stock)}
+                      className="px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      disabled={quantities[product.id] >= product.stock}
+                    >
+                      <Plus className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Panier latéral */}
-          {showCart && (
-            <div className="w-80 bg-white dark:bg-dark-card p-6 rounded-lg shadow-md h-fit">
+                <button
+                  onClick={() => addToCart(product)}
+                  className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-2 px-4 rounded-lg"
+                  disabled={product.stock === 0}
+                >
+                  Ajouter au panier
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Panier en modale */}
+        {showCart && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-dark-card p-6 rounded-lg shadow-xl w-full max-w-md mx-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold">Panier ({getTotalItems()})</h3>
                 <button
                   onClick={() => setShowCart(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   ×
                 </button>
               </div>
 
               {cart.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">Votre panier est vide</p>
+                <p className="text-gray-500 dark:text-gray-400 text-center py-4">Votre panier est vide</p>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-4 max-h-[60vh] overflow-y-auto">
                   {cart.map((item) => (
                     <div key={item.id} className="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-600 rounded">
                       <img src={item.images[0]} alt={item.name} className="w-12 h-12 object-cover rounded" />
                       <div className="flex-1">
-                        <h4 className="font-medium text-sm">{item.name}</h4>
-                        <p className="text-primary font-bold">{item.price}€</p>
+                        <h4 className="font-medium text-sm text-gray-900 dark:text-white">{item.name}</h4>
+                        <p className="text-primary font-bold">{item.price.toFixed(2)} DT</p>
                         <div className="flex items-center gap-2 mt-1">
                           <button
                             onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
-                            className="w-6 h-6 flex items-center justify-center border rounded"
+                            className="w-6 h-6 flex items-center justify-center border rounded hover:bg-gray-100 dark:hover:bg-gray-700"
                           >
                             <Minus className="w-3 h-3" />
                           </button>
                           <span className="text-sm">{item.quantity}</span>
                           <button
                             onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
-                            className="w-6 h-6 flex items-center justify-center border rounded"
+                            className="w-6 h-6 flex items-center justify-center border rounded hover:bg-gray-100 dark:hover:bg-gray-700"
                           >
                             <Plus className="w-3 h-3" />
                           </button>
@@ -406,21 +402,21 @@ const ProductList = () => {
                       </button>
                     </div>
                   ))}
-                  
-                  <div className="border-t pt-4">
-                    <div className="flex justify-between items-center mb-4">
-                      <span className="font-semibold">Total:</span>
-                      <span className="font-bold text-lg text-primary">{getTotalPrice()}€</span>
-                    </div>
-                    <button className="w-full bg-primary hover:bg-primary-dark text-white py-3 rounded-lg font-semibold">
-                      Passer commande
-                    </button>
-                  </div>
                 </div>
               )}
+
+              <div className="border-t pt-4 mt-4">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="font-semibold">Total:</span>
+                  <span className="font-bold text-lg text-primary">{getTotalPrice()} DT</span>
+                </div>
+                <button className="w-full bg-primary hover:bg-primary-dark text-white py-3 rounded-lg font-semibold">
+                  Passer commande
+                </button>
+              </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </Layout>
   );
