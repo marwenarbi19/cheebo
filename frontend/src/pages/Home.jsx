@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
-import { Heart, MessageSquare, Share2, PenLine, X, Users, Bookmark, Clock, Video, Store, MoreHorizontal, Search, PawPrint, Send, Play, Pause, Upload, Image as ImageIcon } from 'lucide-react';
+import { Heart, MessageSquare, Share2, PenLine, X, Users, Bookmark,  Video, Store, MoreHorizontal, Search, PawPrint, Send, Play, Pause, Upload, Image as ImageIcon } from 'lucide-react';
 
 // Profils d'utilisateurs détaillés
 const userProfiles = {
@@ -179,7 +179,6 @@ const LeftSidebar = ({ onShowUserProfile }) => {
         <SidebarItem icon={<Users className="w-6 h-6 text-primary" />} text="Utilisateur" onClick={() => handleNavigation('/profile')} />
         <SidebarItem icon={<Users className="w-6 h-6 text-primary" />} text="Amis" />
         <SidebarItem icon={<Bookmark className="w-6 h-6 text-primary" />} text="Enregistrements" />
-        <SidebarItem icon={<Clock className="w-6 h-6 text-primary" />} text="Souvenirs" />
         <SidebarItem icon={<Users className="w-6 h-6 text-primary" />} text="Groupes" />
         <SidebarItem icon={<Video className="w-6 h-6 text-primary" />} text="Vidéos" />
         <SidebarItem icon={<Store className="w-6 h-6 text-primary" />} text="Marketplace" />

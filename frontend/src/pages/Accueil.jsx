@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
-import { PawPrint, Heart, Users, Shield, Star, ArrowRight, Menu, X } from 'lucide-react';
+import { PawPrint, Heart, Users, Shield, Star, ArrowRight } from 'lucide-react';
 
 const Accueil = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+ 
   const navigate = useNavigate();
 
   const handleNavigation = (path) => {
@@ -71,7 +71,7 @@ const Accueil = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-6">
             <button 
-              onClick={() => handleNavigation('/')} 
+              onClick={() => handleNavigation('/login')} 
               className="px-6 py-2 text-purple-600 hover:text-purple-700 font-medium transition-colors duration-200"
             >
               Connexion
@@ -84,36 +84,11 @@ const Accueil = () => {
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden">
-            <button 
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
+          
+          
         </div>
 
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg border-t border-gray-100 p-4">
-            <div className="flex flex-col space-y-4">
-              <button 
-                onClick={() => handleNavigation('/')} 
-                className="px-6 py-2 text-purple-600 hover:text-purple-700 font-medium transition-colors duration-200 text-left"
-              >
-                Connexion
-              </button>
-              <button 
-                onClick={() => handleNavigation('/signup')} 
-                className="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 font-medium"
-              >
-                S'inscrire
-              </button>
-            </div>
-          </div>
-        )}
+       
       </header>
 
       {/* Hero Section */}
@@ -193,7 +168,7 @@ const Accueil = () => {
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
               <button 
-                onClick={() => handleNavigation('/')}
+                onClick={() => handleNavigation('/login')}
                 className="px-8 py-4 border-2 border-purple-600 text-purple-600 rounded-lg hover:bg-purple-600 hover:text-white transition-all duration-300 font-semibold"
               >
                 Se connecter
