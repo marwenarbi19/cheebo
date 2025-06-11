@@ -164,7 +164,7 @@ const Accueil = () => {
                 onClick={() => handleNavigation('/signup')}
                 className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-2 group"
               >
-                <span>Commencer gratuitement</span>
+                <span>Commencer</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
               <button 
@@ -267,7 +267,7 @@ const Accueil = () => {
               onClick={() => handleNavigation('/signup')}
               className="px-8 py-4 bg-white text-purple-600 rounded-lg hover:bg-gray-100 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-2 mx-auto group"
             >
-              <span>Créer mon compte gratuit</span>
+              <span>Créer un compte </span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>

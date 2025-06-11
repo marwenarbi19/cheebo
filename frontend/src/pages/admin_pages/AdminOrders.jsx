@@ -10,7 +10,7 @@ import {
   XCircle,
   Clock,
   Package,
-  Euro,
+  Coins,
   Calendar,
   User,
   MapPin,
@@ -117,7 +117,7 @@ const AdminOrders = () => {
     const csvContent = "data:text/csv;charset=utf-8," + 
       "ID,Client,Email,Date,Statut,Total\n" +
       orders.map(order => 
-        `${order.id},${order.customerName},${order.customerEmail},${order.date},${statusConfig[order.status].label},${order.total}€`
+        `${order.id},${order.customerName},${order.customerEmail},${order.date},${statusConfig[order.status].label},${order.total} DT`
       ).join("\n");
     
     const encodedUri = encodeURI(csvContent);
@@ -188,10 +188,10 @@ const AdminOrders = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">Chiffre d'affaires</p>
                 <p className="text-2xl font-bold text-green-600">
-                  {orders.reduce((sum, order) => sum + order.total, 0).toFixed(2)}€
+                  {orders.reduce((sum, order) => sum + order.total, 0).toFixed(2)} DT
                 </p>
               </div>
-              <Euro className="h-8 w-8 text-green-600" />
+              <Coins className="h-8 w-8 text-green-600" />
             </div>
           </div>
         </div>
@@ -280,7 +280,7 @@ const AdminOrders = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{order.total.toFixed(2)}€</div>
+                        <div className="text-sm font-medium text-gray-900">{order.total.toFixed(2)} DT</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex items-center space-x-2">
@@ -366,14 +366,14 @@ const AdminOrders = () => {
                           <div className="font-medium text-gray-900">{item.name}</div>
                           <div className="text-sm text-gray-500">Quantité: {item.quantity}</div>
                         </div>
-                        <div className="font-medium text-gray-900">{item.price.toFixed(2)}€</div>
+                        <div className="font-medium text-gray-900">{item.price.toFixed(2)} DT</div>
                       </div>
                     ))}
                   </div>
                   <div className="mt-4 pt-4 border-t border-gray-200">
                     <div className="flex justify-between items-center font-bold text-lg">
                       <span>Total</span>
-                      <span className="text-[#8657ff]">{selectedOrder.total.toFixed(2)}€</span>
+                      <span className="text-[#8657ff]">{selectedOrder.total.toFixed(2)} DT</span>
                     </div>
                   </div>
                 </div>

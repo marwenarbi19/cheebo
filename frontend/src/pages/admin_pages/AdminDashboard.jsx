@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import AdminLayout from './AdminLayout';
-import { Users, FileText, ShoppingCart, TrendingUp, AlertTriangle, Heart, MessageSquare, Activity, DollarSign, PawPrint, Stethoscope, Calendar, Bell } from "lucide-react";
+import { Users, FileText, ShoppingCart, TrendingUp, AlertTriangle, Heart, MessageSquare, Activity, Coins, PawPrint, Stethoscope, Calendar, Bell } from "lucide-react";
 
 const AdminDashboard = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('today');
@@ -254,9 +254,9 @@ const AdminDashboard = () => {
           />
           <StatCard
             title="Revenus"
-            value={`${dashboardData.orders.revenue.toLocaleString()} €`}
+            value={`${dashboardData.orders.revenue.toLocaleString()} DT`}
             change={23.1}
-            icon={DollarSign}
+            icon={Coins}
             color="bg-orange-500"
             subtitle={`${dashboardData.orders.total} commandes`}
           />

@@ -8,7 +8,7 @@ import { Heart, MessageSquare, Share2, PenLine, X, Users, Bookmark,  Video, Stor
 const userProfiles = {
   1: {
     id: 1,
-    name: 'Jean Dupont',
+    name: 'ali khalil',
     image: '/users/user_1.jpg',
     bio: 'Passionné d\'animaux, propriétaire de Rex depuis 5 ans. J\'adore partager nos aventures !',
     location: 'Paris, France',
@@ -191,7 +191,7 @@ const LeftSidebar = ({ onShowUserProfile }) => {
 // Barre latérale droite
 const RightSidebar = ({ onShowUserProfile }) => {
   const connectedUsers = [
-    { id: 1, userImage: '/users/user_1.jpg', name: 'Jean Dupont', isOnline: true },
+    { id: 1, userImage: '/users/user_1.jpg', name: 'ali khalil', isOnline: true },
     { id: 2, userImage: '/users/user_2.jpg', name: 'Marie Lefèvre', isOnline: false },
     { id: 3, userImage: '/users/user_3.avif', name: 'Thomas Martin', isOnline: true },
     { userImage: '/users/user_4.jpg', name: 'Alice Dubois', isOnline: true },
@@ -440,7 +440,7 @@ const Home = () => {
       id: 1,
       userId: 1,
       userImage: '/users/user_1.jpg',
-      user: 'Jean Dupont',
+      user: 'ali khalil',
       time: 'Il y a 10 minutes',
       phrase: 'Belle journée au parc avec Rex ! Il adore courir après les écureuils.',
       petImage: '/pets/pet_1.webp',
@@ -477,8 +477,6 @@ const Home = () => {
   const [showModal, setShowModal] = useState(false);
   const [showUserProfile, setShowUserProfile] = useState(null);
   const [newPost, setNewPost] = useState({
-    userImage: '/users/default.jpg',
-    user: '',
     phrase: '',
     petImage: '',
     type: 'image',
@@ -510,14 +508,14 @@ const Home = () => {
       ...newPost,
       id: posts.length + 1,
       userId: null, // Utilisateur actuel
+      userImage: '/users/current_user.jpg', // Image par défaut
+      user: 'Utilisateur Actuel', // Nom par défaut
       time: "À l'instant",
       likes: 0,
       comments: [],
     };
     setPosts([newPostWithInfo, ...posts]);
     setNewPost({ 
-      userImage: '/users/default.jpg', 
-      user: '', 
       phrase: '', 
       petImage: '',
       type: 'image',
@@ -580,21 +578,6 @@ const Home = () => {
                 Nouvelle publication
               </h2>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="Votre nom"
-                  value={newPost.user}
-                  onChange={(e) => setNewPost({ ...newPost, user: e.target.value })}
-                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-dark-accent text-gray-800 dark:text-dark-text"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Lien image de profil"
-                  value={newPost.userImage}
-                  onChange={(e) => setNewPost({ ...newPost, userImage: e.target.value })}
-                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-dark-accent text-gray-800 dark:text-dark-text"
-                />
                 <textarea
                   placeholder="Que voulez-vous partager ?"
                   value={newPost.phrase}

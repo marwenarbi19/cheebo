@@ -12,7 +12,8 @@ import AdminLayout from './AdminLayout';import {
   PawPrint,
   Stethoscope,
   Star,
-  Download
+  Download,
+  Coins
 } from 'lucide-react';
 
 const AdminStats = () => {
@@ -194,9 +195,9 @@ const AdminStats = () => {
           />
           <StatCard
             title="Revenus"
-            value={`${stats.revenue.toLocaleString()} €`}
+            value={`${stats.revenue.toLocaleString()} DT`}
             change={23.1}
-            icon={TrendingUp}
+            icon={Coins}
             color="orange"
           />
         </div>
@@ -291,7 +292,7 @@ const AdminStats = () => {
                     <div className="flex gap-4 mt-1">
                       <span className="text-xs text-gray-600">{product.sales} ventes</span>
                       <span className="text-xs text-green-600 font-medium">
-                        {product.revenue.toFixed(2)} €
+                        {product.revenue.toFixed(2)} DT
                       </span>
                       <span className="flex items-center gap-1 text-xs text-yellow-600">
                         <Star className="w-3 h-3" />
